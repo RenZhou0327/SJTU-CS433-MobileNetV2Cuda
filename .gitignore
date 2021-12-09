@@ -1,0 +1,6 @@
+/models
+/images
+/parameters/
+/results
+*.x
+temp*
