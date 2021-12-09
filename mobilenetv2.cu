@@ -8,13 +8,13 @@ using namespace std;
 
 FILE *in_w, *in_b;
 
-void conv2d();
-void relu6();
-void depth_wise_conv();
-void point_wise_conv();
-void add_layer();
-void avg_pool();
-void linear_layer();
+void conv2d() {};
+void relu6() {};
+void depth_wise_conv() {};
+void point_wise_conv() {};
+void add_layer() {};
+void avg_pool() {};
+void linear_layer() {};
 
 void infer() {
     
@@ -171,14 +171,29 @@ void infer() {
 
 int main(int argc, char* argv[]) {
     char image_path[] = "./images/batch_images.txt";
-    char weight_path[] = "./parameters/weight_data.txt";
+    char weight_path[] = "./parameters/00just_for_test.txt";
     char bias_path[] = "./parameters/bias_data.txt";
     char infer_res_path[] = "./results/";
     
     in_w = fopen(weight_path, "r");
     in_b = fopen(bias_path, "r");
 
-    infer();
+    clock_t st, et;
+    st = clock();
+    float *weights = (float *)malloc(1280 * (1000 + 1) * sizeof(float));
+    for (int i = 0; i < 1280; ++i) {
+        for (int j = 0; j < 1000; ++j) {
+            fscanf(in_w, "%f", &weights[j * 1280 + i]);
+        }
+        // fscanf(in_b, "%f", &weights[1280 * 1000 + i]);
+    }
+    // for (int i = 0; i < 32 * (3 * 3 * 3 + 1); ++i) {
+    //     printf("%f\n", weights[i]);
+    // }
+    et = clock();
+    cout<< "time:"<<double(et - st) / CLOCKS_PER_SEC<<endl;
+
+    // infer();
     
     // clock_t st, et;
     // st = clock();
