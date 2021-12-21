@@ -1,5 +1,5 @@
 TARGET = mobilenet_main
-SRC = mobilenet_main.cc init_model.cc
+SRC = mobilenet_main.cc init_model.cu
 
 NVCC = /usr/local/cuda-10.2/bin/nvcc
 

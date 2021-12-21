@@ -3,7 +3,7 @@
 #include <math.h>
 #include <cuda.h>
 #include <cuda_runtime.h>
-#include "init_model.h"
+#include "init_model.cuh"
 #include "layers.cuh"
 
 #define INPUTSHAPE 3 * 244 * 244
@@ -55,8 +55,6 @@ int main()
     readInput("./mobilenetInput.txt");   // 读取输入
     readOutput("./mobilenetOutput.txt"); // 读取标准输出
 
-    test_read_data();
-    return 0;
 
     float sumTime = 0;
     for (int i = 0; i < TESTNUM; i++)
