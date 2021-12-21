@@ -1,10 +1,10 @@
-SRC = mobilenetv2.cu
-TARGET = mobilenetv2
+TARGET = mobilenet_main
+SRC = mobilenet_main.cc init_model.cc
 
-CC = /usr/local/cuda-10.2/bin/nvcc
+NVCC = /usr/local/cuda-10.2/bin/nvcc
 
 $(TARGET): $(SRC)
-	$(CC) $(SRC) -o $(TARGET)
+	$(NVCC) $(SRC) -o $(TARGET)
 
 clean:
-	rm -rf *.o mobilenetv2
+	rm -rf *.o mobilenet_main

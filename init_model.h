@@ -1,0 +1,118 @@
+#ifndef INIT_MODEL_H
+#define INIT_MODEL_H
+
+const int w1_len = 32 * 3 * 3 * 3, b1_len = 32;
+const int w2_len = 32 * 1 * 3 * 3, b2_len = 32;
+const int w3_len = 16 * 32 * 1 * 1, b3_len = 16;
+const int w4_len = 96 * 16 * 1 * 1, b4_len = 96;
+const int w5_len = 96 * 1 * 3 * 3, b5_len = 96;
+const int w6_len = 24 * 96 * 1 * 1, b6_len = 24;
+const int w7_len = 144 * 24 * 1 * 1, b7_len = 144;
+const int w8_len = 144 * 1 * 3 * 3, b8_len = 144;
+const int w9_len = 24 * 144 * 1 * 1, b9_len = 24;
+const int w10_len = 144 * 24 * 1 * 1, b10_len = 144;
+const int w11_len = 144 * 1 * 3 * 3, b11_len = 144;
+const int w12_len = 32 * 144 * 1 * 1, b12_len = 32;
+const int w13_len = 192 * 32 * 1 * 1, b13_len = 192;
+const int w14_len = 192 * 1 * 3 * 3, b14_len = 192;
+const int w15_len = 32 * 192 * 1 * 1, b15_len = 32;
+const int w16_len = 192 * 32 * 1 * 1, b16_len = 192;
+const int w17_len = 192 * 1 * 3 * 3, b17_len = 192;
+const int w18_len = 32 * 192 * 1 * 1, b18_len = 32;
+const int w19_len = 192 * 32 * 1 * 1, b19_len = 192;
+const int w20_len = 192 * 1 * 3 * 3, b20_len = 192;
+const int w21_len = 64 * 192 * 1 * 1, b21_len = 64;
+const int w22_len = 384 * 64 * 1 * 1, b22_len = 384;
+const int w23_len = 384 * 1 * 3 * 3, b23_len = 384;
+const int w24_len = 64 * 384 * 1 * 1, b24_len = 64;
+const int w25_len = 384 * 64 * 1 * 1, b25_len = 384;
+const int w26_len = 384 * 1 * 3 * 3, b26_len = 384;
+const int w27_len = 64 * 384 * 1 * 1, b27_len = 64;
+const int w28_len = 384 * 64 * 1 * 1, b28_len = 384;
+const int w29_len = 384 * 1 * 3 * 3, b29_len = 384;
+const int w30_len = 64 * 384 * 1 * 1, b30_len = 64;
+const int w31_len = 384 * 64 * 1 * 1, b31_len = 384;
+const int w32_len = 384 * 1 * 3 * 3, b32_len = 384;
+const int w33_len = 96 * 384 * 1 * 1, b33_len = 96;
+const int w34_len = 576 * 96 * 1 * 1, b34_len = 576;
+const int w35_len = 576 * 1 * 3 * 3, b35_len = 576;
+const int w36_len = 96 * 576 * 1 * 1, b36_len = 96;
+const int w37_len = 576 * 96 * 1 * 1, b37_len = 576;
+const int w38_len = 576 * 1 * 3 * 3, b38_len = 576;
+const int w39_len = 96 * 576 * 1 * 1, b39_len = 96;
+const int w40_len = 576 * 96 * 1 * 1, b40_len = 576;
+const int w41_len = 576 * 1 * 3 * 3, b41_len = 576;
+const int w42_len = 160 * 576 * 1 * 1, b42_len = 160;
+const int w43_len = 960 * 160 * 1 * 1, b43_len = 960;
+const int w44_len = 960 * 1 * 3 * 3, b44_len = 960;
+const int w45_len = 160 * 960 * 1 * 1, b45_len = 160;
+const int w46_len = 960 * 160 * 1 * 1, b46_len = 960;
+const int w47_len = 960 * 1 * 3 * 3, b47_len = 960;
+const int w48_len = 160 * 960 * 1 * 1, b48_len = 160;
+const int w49_len = 960 * 160 * 1 * 1, b49_len = 960;
+const int w50_len = 960 * 1 * 3 * 3, b50_len = 960;
+const int w51_len = 320 * 960 * 1 * 1, b51_len = 320;
+const int w52_len = 1280 * 320 * 1 * 1, b52_len = 1280;
+const int w53_len = 1000 * 1280 * 1 * 1, b53_len = 1000;
+
+extern float w1[w1_len], b1[b1_len];
+extern float w2[w2_len], b2[b2_len];
+extern float w3[w3_len], b3[b3_len];
+extern float w4[w4_len], b4[b4_len];
+extern float w5[w5_len], b5[b5_len];
+extern float w6[w6_len], b6[b6_len];
+extern float w7[w7_len], b7[b7_len];
+extern float w8[w8_len], b8[b8_len];
+extern float w9[w9_len], b9[b9_len];
+extern float w10[w10_len], b10[b10_len];
+extern float w11[w11_len], b11[b11_len];
+extern float w12[w12_len], b12[b12_len];
+extern float w13[w13_len], b13[b13_len];
+extern float w14[w14_len], b14[b14_len];
+extern float w15[w15_len], b15[b15_len];
+extern float w16[w16_len], b16[b16_len];
+extern float w17[w17_len], b17[b17_len];
+extern float w18[w18_len], b18[b18_len];
+extern float w19[w19_len], b19[b19_len];
+extern float w20[w20_len], b20[b20_len];
+extern float w21[w21_len], b21[b21_len];
+extern float w22[w22_len], b22[b22_len];
+extern float w23[w23_len], b23[b23_len];
+extern float w24[w24_len], b24[b24_len];
+extern float w25[w25_len], b25[b25_len];
+extern float w26[w26_len], b26[b26_len];
+extern float w27[w27_len], b27[b27_len];
+extern float w28[w28_len], b28[b28_len];
+extern float w29[w29_len], b29[b29_len];
+extern float w30[w30_len], b30[b30_len];
+extern float w31[w31_len], b31[b31_len];
+extern float w32[w32_len], b32[b32_len];
+extern float w33[w33_len], b33[b33_len];
+extern float w34[w34_len], b34[b34_len];
+extern float w35[w35_len], b35[b35_len];
+extern float w36[w36_len], b36[b36_len];
+extern float w37[w37_len], b37[b37_len];
+extern float w38[w38_len], b38[b38_len];
+extern float w39[w39_len], b39[b39_len];
+extern float w40[w40_len], b40[b40_len];
+extern float w41[w41_len], b41[b41_len];
+extern float w42[w42_len], b42[b42_len];
+extern float w43[w43_len], b43[b43_len];
+extern float w44[w44_len], b44[b44_len];
+extern float w45[w45_len], b45[b45_len];
+extern float w46[w46_len], b46[b46_len];
+extern float w47[w47_len], b47[b47_len];
+extern float w48[w48_len], b48[b48_len];
+extern float w49[w49_len], b49[b49_len];
+extern float w50[w50_len], b50[b50_len];
+extern float w51[w51_len], b51[b51_len];
+extern float w52[w52_len], b52[b52_len];
+extern float w53[w53_len], b53[b53_len];
+
+// 读取权重
+void initModel();
+
+// 测试模型读入权重是否正确
+void test_read_data();
+
+#endif
