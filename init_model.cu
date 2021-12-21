@@ -54,7 +54,7 @@ const int w51_len = 320 * 960 * 1 * 1, b51_len = 320;
 const int w52_len = 1280 * 320 * 1 * 1, b52_len = 1280;
 const int w53_len = 1000 * 1280 * 1 * 1, b53_len = 1000;
 
-const int float_size = sizeof(float);
+const int float_size = sizeof (float);
 
 FILE *w_in = NULL, *b_in = NULL;
 
@@ -170,77 +170,90 @@ void alloc_mem() {
 }
 
 void read_params() {
-    fread(w1, w1_len * sizeof(float), 1, w_in); fread(b1, b1_len * sizeof(float), 1, b_in);
-    fread(w2, w2_len * sizeof(float), 1, w_in); fread(b2, b2_len * sizeof(float), 1, b_in);
-    fread(w3, w3_len * sizeof(float), 1, w_in); fread(b3, b3_len * sizeof(float), 1, b_in);
-    fread(w4, w4_len * sizeof(float), 1, w_in); fread(b4, b4_len * sizeof(float), 1, b_in);
-    fread(w5, w5_len * sizeof(float), 1, w_in); fread(b5, b5_len * sizeof(float), 1, b_in);
-    fread(w6, w6_len * sizeof(float), 1, w_in); fread(b6, b6_len * sizeof(float), 1, b_in);
-    fread(w7, w7_len * sizeof(float), 1, w_in); fread(b7, b7_len * sizeof(float), 1, b_in);
-    fread(w8, w8_len * sizeof(float), 1, w_in); fread(b8, b8_len * sizeof(float), 1, b_in);
-    fread(w9, w9_len * sizeof(float), 1, w_in); fread(b9, b9_len * sizeof(float), 1, b_in);
-    fread(w10, w10_len * sizeof(float), 1, w_in); fread(b10, b10_len * sizeof(float), 1, b_in);
-    fread(w11, w11_len * sizeof(float), 1, w_in); fread(b11, b11_len * sizeof(float), 1, b_in);
-    fread(w12, w12_len * sizeof(float), 1, w_in); fread(b12, b12_len * sizeof(float), 1, b_in);
-    fread(w13, w13_len * sizeof(float), 1, w_in); fread(b13, b13_len * sizeof(float), 1, b_in);
-    fread(w14, w14_len * sizeof(float), 1, w_in); fread(b14, b14_len * sizeof(float), 1, b_in);
-    fread(w15, w15_len * sizeof(float), 1, w_in); fread(b15, b15_len * sizeof(float), 1, b_in);
-    fread(w16, w16_len * sizeof(float), 1, w_in); fread(b16, b16_len * sizeof(float), 1, b_in);
-    fread(w17, w17_len * sizeof(float), 1, w_in); fread(b17, b17_len * sizeof(float), 1, b_in);
-    fread(w18, w18_len * sizeof(float), 1, w_in); fread(b18, b18_len * sizeof(float), 1, b_in);
-    fread(w19, w19_len * sizeof(float), 1, w_in); fread(b19, b19_len * sizeof(float), 1, b_in);
-    fread(w20, w20_len * sizeof(float), 1, w_in); fread(b20, b20_len * sizeof(float), 1, b_in);
-    fread(w21, w21_len * sizeof(float), 1, w_in); fread(b21, b21_len * sizeof(float), 1, b_in);
-    fread(w22, w22_len * sizeof(float), 1, w_in); fread(b22, b22_len * sizeof(float), 1, b_in);
-    fread(w23, w23_len * sizeof(float), 1, w_in); fread(b23, b23_len * sizeof(float), 1, b_in);
-    fread(w24, w24_len * sizeof(float), 1, w_in); fread(b24, b24_len * sizeof(float), 1, b_in);
-    fread(w25, w25_len * sizeof(float), 1, w_in); fread(b25, b25_len * sizeof(float), 1, b_in);
-    fread(w26, w26_len * sizeof(float), 1, w_in); fread(b26, b26_len * sizeof(float), 1, b_in);
-    fread(w27, w27_len * sizeof(float), 1, w_in); fread(b27, b27_len * sizeof(float), 1, b_in);
-    fread(w28, w28_len * sizeof(float), 1, w_in); fread(b28, b28_len * sizeof(float), 1, b_in);
-    fread(w29, w29_len * sizeof(float), 1, w_in); fread(b29, b29_len * sizeof(float), 1, b_in);
-    fread(w30, w30_len * sizeof(float), 1, w_in); fread(b30, b30_len * sizeof(float), 1, b_in);
-    fread(w31, w31_len * sizeof(float), 1, w_in); fread(b31, b31_len * sizeof(float), 1, b_in);
-    fread(w32, w32_len * sizeof(float), 1, w_in); fread(b32, b32_len * sizeof(float), 1, b_in);
-    fread(w33, w33_len * sizeof(float), 1, w_in); fread(b33, b33_len * sizeof(float), 1, b_in);
-    fread(w34, w34_len * sizeof(float), 1, w_in); fread(b34, b34_len * sizeof(float), 1, b_in);
-    fread(w35, w35_len * sizeof(float), 1, w_in); fread(b35, b35_len * sizeof(float), 1, b_in);
-    fread(w36, w36_len * sizeof(float), 1, w_in); fread(b36, b36_len * sizeof(float), 1, b_in);
-    fread(w37, w37_len * sizeof(float), 1, w_in); fread(b37, b37_len * sizeof(float), 1, b_in);
-    fread(w38, w38_len * sizeof(float), 1, w_in); fread(b38, b38_len * sizeof(float), 1, b_in);
-    fread(w39, w39_len * sizeof(float), 1, w_in); fread(b39, b39_len * sizeof(float), 1, b_in);
-    fread(w40, w40_len * sizeof(float), 1, w_in); fread(b40, b40_len * sizeof(float), 1, b_in);
-    fread(w41, w41_len * sizeof(float), 1, w_in); fread(b41, b41_len * sizeof(float), 1, b_in);
-    fread(w42, w42_len * sizeof(float), 1, w_in); fread(b42, b42_len * sizeof(float), 1, b_in);
-    fread(w43, w43_len * sizeof(float), 1, w_in); fread(b43, b43_len * sizeof(float), 1, b_in);
-    fread(w44, w44_len * sizeof(float), 1, w_in); fread(b44, b44_len * sizeof(float), 1, b_in);
-    fread(w45, w45_len * sizeof(float), 1, w_in); fread(b45, b45_len * sizeof(float), 1, b_in);
-    fread(w46, w46_len * sizeof(float), 1, w_in); fread(b46, b46_len * sizeof(float), 1, b_in);
-    fread(w47, w47_len * sizeof(float), 1, w_in); fread(b47, b47_len * sizeof(float), 1, b_in);
-    fread(w48, w48_len * sizeof(float), 1, w_in); fread(b48, b48_len * sizeof(float), 1, b_in);
-    fread(w49, w49_len * sizeof(float), 1, w_in); fread(b49, b49_len * sizeof(float), 1, b_in);
-    fread(w50, w50_len * sizeof(float), 1, w_in); fread(b50, b50_len * sizeof(float), 1, b_in);
-    fread(w51, w51_len * sizeof(float), 1, w_in); fread(b51, b51_len * sizeof(float), 1, b_in);
-    fread(w52, w52_len * sizeof(float), 1, w_in); fread(b52, b52_len * sizeof(float), 1, b_in);
-    fread(w53, w53_len * sizeof(float), 1, w_in); fread(b53, b53_len * sizeof(float), 1, b_in);
+    fread(w1, w1_len * float_size, 1, w_in); fread(b1, b1_len * float_size, 1, b_in);
+    fread(w2, w2_len * float_size, 1, w_in); fread(b2, b2_len * float_size, 1, b_in);
+    fread(w3, w3_len * float_size, 1, w_in); fread(b3, b3_len * float_size, 1, b_in);
+    fread(w4, w4_len * float_size, 1, w_in); fread(b4, b4_len * float_size, 1, b_in);
+    fread(w5, w5_len * float_size, 1, w_in); fread(b5, b5_len * float_size, 1, b_in);
+    fread(w6, w6_len * float_size, 1, w_in); fread(b6, b6_len * float_size, 1, b_in);
+    fread(w7, w7_len * float_size, 1, w_in); fread(b7, b7_len * float_size, 1, b_in);
+    fread(w8, w8_len * float_size, 1, w_in); fread(b8, b8_len * float_size, 1, b_in);
+    fread(w9, w9_len * float_size, 1, w_in); fread(b9, b9_len * float_size, 1, b_in);
+    fread(w10, w10_len * float_size, 1, w_in); fread(b10, b10_len * float_size, 1, b_in);
+    fread(w11, w11_len * float_size, 1, w_in); fread(b11, b11_len * float_size, 1, b_in);
+    fread(w12, w12_len * float_size, 1, w_in); fread(b12, b12_len * float_size, 1, b_in);
+    fread(w13, w13_len * float_size, 1, w_in); fread(b13, b13_len * float_size, 1, b_in);
+    fread(w14, w14_len * float_size, 1, w_in); fread(b14, b14_len * float_size, 1, b_in);
+    fread(w15, w15_len * float_size, 1, w_in); fread(b15, b15_len * float_size, 1, b_in);
+    fread(w16, w16_len * float_size, 1, w_in); fread(b16, b16_len * float_size, 1, b_in);
+    fread(w17, w17_len * float_size, 1, w_in); fread(b17, b17_len * float_size, 1, b_in);
+    fread(w18, w18_len * float_size, 1, w_in); fread(b18, b18_len * float_size, 1, b_in);
+    fread(w19, w19_len * float_size, 1, w_in); fread(b19, b19_len * float_size, 1, b_in);
+    fread(w20, w20_len * float_size, 1, w_in); fread(b20, b20_len * float_size, 1, b_in);
+    fread(w21, w21_len * float_size, 1, w_in); fread(b21, b21_len * float_size, 1, b_in);
+    fread(w22, w22_len * float_size, 1, w_in); fread(b22, b22_len * float_size, 1, b_in);
+    fread(w23, w23_len * float_size, 1, w_in); fread(b23, b23_len * float_size, 1, b_in);
+    fread(w24, w24_len * float_size, 1, w_in); fread(b24, b24_len * float_size, 1, b_in);
+    fread(w25, w25_len * float_size, 1, w_in); fread(b25, b25_len * float_size, 1, b_in);
+    fread(w26, w26_len * float_size, 1, w_in); fread(b26, b26_len * float_size, 1, b_in);
+    fread(w27, w27_len * float_size, 1, w_in); fread(b27, b27_len * float_size, 1, b_in);
+    fread(w28, w28_len * float_size, 1, w_in); fread(b28, b28_len * float_size, 1, b_in);
+    fread(w29, w29_len * float_size, 1, w_in); fread(b29, b29_len * float_size, 1, b_in);
+    fread(w30, w30_len * float_size, 1, w_in); fread(b30, b30_len * float_size, 1, b_in);
+    fread(w31, w31_len * float_size, 1, w_in); fread(b31, b31_len * float_size, 1, b_in);
+    fread(w32, w32_len * float_size, 1, w_in); fread(b32, b32_len * float_size, 1, b_in);
+    fread(w33, w33_len * float_size, 1, w_in); fread(b33, b33_len * float_size, 1, b_in);
+    fread(w34, w34_len * float_size, 1, w_in); fread(b34, b34_len * float_size, 1, b_in);
+    fread(w35, w35_len * float_size, 1, w_in); fread(b35, b35_len * float_size, 1, b_in);
+    fread(w36, w36_len * float_size, 1, w_in); fread(b36, b36_len * float_size, 1, b_in);
+    fread(w37, w37_len * float_size, 1, w_in); fread(b37, b37_len * float_size, 1, b_in);
+    fread(w38, w38_len * float_size, 1, w_in); fread(b38, b38_len * float_size, 1, b_in);
+    fread(w39, w39_len * float_size, 1, w_in); fread(b39, b39_len * float_size, 1, b_in);
+    fread(w40, w40_len * float_size, 1, w_in); fread(b40, b40_len * float_size, 1, b_in);
+    fread(w41, w41_len * float_size, 1, w_in); fread(b41, b41_len * float_size, 1, b_in);
+    fread(w42, w42_len * float_size, 1, w_in); fread(b42, b42_len * float_size, 1, b_in);
+    fread(w43, w43_len * float_size, 1, w_in); fread(b43, b43_len * float_size, 1, b_in);
+    fread(w44, w44_len * float_size, 1, w_in); fread(b44, b44_len * float_size, 1, b_in);
+    fread(w45, w45_len * float_size, 1, w_in); fread(b45, b45_len * float_size, 1, b_in);
+    fread(w46, w46_len * float_size, 1, w_in); fread(b46, b46_len * float_size, 1, b_in);
+    fread(w47, w47_len * float_size, 1, w_in); fread(b47, b47_len * float_size, 1, b_in);
+    fread(w48, w48_len * float_size, 1, w_in); fread(b48, b48_len * float_size, 1, b_in);
+    fread(w49, w49_len * float_size, 1, w_in); fread(b49, b49_len * float_size, 1, b_in);
+    fread(w50, w50_len * float_size, 1, w_in); fread(b50, b50_len * float_size, 1, b_in);
+    fread(w51, w51_len * float_size, 1, w_in); fread(b51, b51_len * float_size, 1, b_in);
+    fread(w52, w52_len * float_size, 1, w_in); fread(b52, b52_len * float_size, 1, b_in);
+    fread(w53, w53_len * float_size, 1, w_in); fread(b53, b53_len * float_size, 1, b_in);
 }
 
 void move_item(float** w_p, int w_len, float** b_p, int b_len) {
     float *w_gpu = NULL, *b_gpu = NULL;
 
     cudaError_t e1 = cudaSuccess, e2 = cudaSuccess;
-    e1 = cudaMalloc((void**)&w_gpu, w_len * sizeof(float));
-    e2 = cudaMalloc((void**)&b_gpu, b_len * sizeof(float));
+    e1 = cudaMalloc((void**)&w_gpu, w_len * float_size);
+    e2 = cudaMalloc((void**)&b_gpu, b_len * float_size);
     assert(e1 == cudaSuccess && e2 == cudaSuccess);
     
-    e1 = cudaMemcpy(w_gpu, *w_p, w_len * sizeof(float), cudaMemcpyHostToDevice);
-    e2 = cudaMemcpy(b_gpu, *b_p, b_len * sizeof(float), cudaMemcpyHostToDevice);
+    e1 = cudaMemcpy(w_gpu, *w_p, w_len * float_size, cudaMemcpyHostToDevice);
+    e2 = cudaMemcpy(b_gpu, *b_p, b_len * float_size, cudaMemcpyHostToDevice);
     assert(e1 == cudaSuccess && e2 == cudaSuccess);
     
     free(*w_p);
     free(*b_p);
     *w_p = w_gpu;
     *b_p = b_gpu;
+}
+
+void move_imgs(float* input, float** imgs_p, int len) {
+    float *imgs_gpu = NULL;
+
+    cudaError_t err = cudaSuccess;
+    err = cudaMalloc((void**)&imgs_gpu, len * float_size);
+    assert(err == cudaSuccess);
+    
+    err = cudaMemcpy(imgs_gpu, input, len * float_size, cudaMemcpyHostToDevice);
+    assert(err == cudaSuccess);
+    
+    *imgs_p = imgs_gpu;
 }
 
 void move_params() {
@@ -299,7 +312,7 @@ void move_params() {
     move_item(&w53, w53_len, &b53, b53_len);
 }
 
-void initModel() 
+void init_model() 
 {
     char weight_path[] = "./parameters/weight_data.bin";
     char bias_path[] = "./parameters/bias_data.bin";

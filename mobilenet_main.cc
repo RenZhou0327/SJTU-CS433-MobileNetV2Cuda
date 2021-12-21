@@ -44,8 +44,12 @@ void checkOutput(float *out1, float *out2)
     }
 }
 
+// TODO: 读取权重
+void initModel();
+
 // TODO: 实现自己的inference
 void inference(float *input, float *output);
+
 
 int main()
 {
@@ -83,10 +87,16 @@ int main()
     printf("Average Time is: %f\n", (sumTime / TESTNUM / ITERNUM));
 }
 
+void initModel() {
+    init_model();
+}
 
 void inference(float *input, float *output)
 {
-    
+    // 注意这里imgs是CHW格式
+    float *in_tensor = NULL, *out_tensor = NULL;
+    move_imgs(input, &in_tensor, INPUTSHAPE);
+
     // Block1
     conv2d();
     relu6();

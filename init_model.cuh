@@ -117,7 +117,7 @@ extern float *w53, *b53;
 
 
 // 读取权重
-void initModel();
+void init_model();
 
 // 分配内存空间
 void alloc_mem();
@@ -127,6 +127,9 @@ void read_params();
 
 // 移动到cuda上
 void move_params();
+
+// 移动图片到cuda上
+void move_imgs(float* input, float** imgs, int len);
 
 // 测试模型读入权重是否正确
 void test_read_data();
