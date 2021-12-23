@@ -103,7 +103,6 @@ void inference(float *input, float *output)
     // Block1
     conv2d(in_tensor, &out_tensor, w1, b1, in_shape, in_c, k_shape, out_c, stride, pad);
     exit(0);
-    cudaFree(in_tensor);
     relu6();
     in_tensor = out_tensor;
     out_tensor = NULL;

@@ -3,6 +3,7 @@
 /parameters/
 /results
 *.x
+tmpfiles/
 temp*
 **/mobilenetInput.txt
 **/mobilenetOutput.txt

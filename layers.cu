@@ -1,5 +1,20 @@
 #include "layers.cuh"
 
+__global__ void add_bias_relu6(float* WX, float *B, int out_c, int out_shape) 
+{
+    // thread_j: [0, 122 * 32)
+    int thread_j = blockIdx.x * blockDim.x + threadIdx.x;
+    // thread_i: [0, 122)
+    int thread_i = blockIdx.y;
+    int num_id = thread_i * out_c * out_shape + thread_j;
+    int b_id = num_id / (out_shape * out_shape);
+    WX[num_id] += B[b_id];
+    // RELU6
+    WX[num_id] = max(0.0, WX[num_id]);
+    WX[num_id] = min(6.0, WX[num_id]);
+    // printf("%d %d\n", thread_i, thread_j);
+}
+
 
 __global__ void img2col(float *imgs, float *cols, int in_shape, int out_shape, int k_shape, int in_c, int s, int p) {
     int thread_j = blockIdx.x * blockDim.x + threadIdx.x;
@@ -21,7 +36,14 @@ __global__ void img2col(float *imgs, float *cols, int in_shape, int out_shape, i
     }
 }
 
-void matGemm(float *A, float *B, float* C, int m, int k, int n) {
+
+// __global__ void add_bias_kernel(float* WX, float *B, int out_c, int out_shape) {
+
+    
+// }
+
+
+void mat_multiple(float *A, float *B, float* C, int m, int k, int n) {
 	cublasStatus_t status;
 	cublasHandle_t handle;
 
@@ -30,6 +52,9 @@ void matGemm(float *A, float *B, float* C, int m, int k, int n) {
     assert(status == CUBLAS_STATUS_SUCCESS);
     cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, n, m, k, &al, B, n, A, k, &bt, C, n);
 }
+
+
+
 
 
 void conv2d(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_shape, int in_c, int k_shape, int out_c, int stride, int pad)
@@ -47,9 +72,10 @@ void conv2d(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_s
     int tIndx = 32, tIndy = k_shape * k_shape;
     // printf("%d %d %d %d %d\n", threadNum, bIndx, bIndy, tIndx, tIndy);
     // exit(0);
-    dim3 gDim(bIndx, bIndy);
-    dim3 bDim(tIndx, tIndy);
-    img2col<<<gDim, bDim>>>(in_tensor, in_cols, in_shape, out_shape, k_shape, in_c, stride, pad);
+    dim3 gDim1(bIndx, bIndy);
+    // !!! 特别注意, tIndx * tIndy得小于1024, 否则出错无结果!!!
+    dim3 bDim1(tIndx, tIndy);
+    img2col<<<gDim1, bDim1>>>(in_tensor, in_cols, in_shape, out_shape, k_shape, in_c, stride, pad);
     cudaFree(in_tensor);
 
     // // Just for Test:
@@ -68,21 +94,31 @@ void conv2d(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_s
     int mat_m = out_c, mat_k = in_c * k_shape * k_shape, mat_n = out_shape * out_shape;
     err = cudaMalloc((void**)&out_tensor, out_lens * sizeof(float));
     assert(err == cudaSuccess);
-    matGemm(w, in_cols, out_tensor, mat_m, mat_k, mat_n);
-    cudaFree(w);
-    cudaFree(in_cols);
+    mat_multiple(w, in_cols, out_tensor, mat_m, mat_k, mat_n);
+    err = cudaFree(w);
+    assert(err == cudaSuccess);
+    err = cudaFree(in_cols);
+    assert(err == cudaSuccess);
+
+    printf("here\n");
+    printf("%d %d\n", out_c, out_shape);
+    dim3 gDim2(out_shape, out_shape);
+    dim3 bDim2(out_c, 1);
+    add_bias_relu6<<<gDim2, bDim2>>>(out_tensor, b, out_c, out_shape);
+    cudaFree(b);
 
     // Just for Test:
     float *temp = (float*) malloc(out_lens * sizeof(float));
     err = cudaMemcpy(temp, out_tensor, out_lens * sizeof(float), cudaMemcpyDeviceToHost);
     assert(err == cudaSuccess);
-    printf("%f\n", temp[416288]);
-    // for (int i = 0; i < 10; ++i) {
-    //     printf("%f ", temp[10388]);
-    // }
-    printf("\n");
+    // printf("%f\n", temp[416288]);
+    FILE *test_file = fopen("tmpfiles/317_relu.txt", "w");
+    for (int i = 0; i < out_lens; ++i) {
+        fprintf(test_file, "%f ", temp[i]);
+    }
+    fprintf(test_file, "\n");
+    fclose(test_file);
     exit(0);
-    // cudaDeviceSynchronize();
 };
 
 void relu6() {};
