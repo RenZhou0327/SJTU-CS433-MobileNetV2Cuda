@@ -383,3 +383,20 @@ void test_read_data() {
     printf("%f %f\n", w52[w52_len - 1], b52[b52_len - 1]);
     printf("%f %f\n", w53[w53_len - 1], b53[b53_len - 1]);
 }
+
+// __global__ void print_output(float* nums, int lens, int idx) {
+//     for (int i = 0; i < idx; ++i) {
+//         printf("%f ", nums[i]);
+//     }
+//     printf("\n");
+// }
+
+void test_output_data(float* nums, int lens, int idx) {
+    // print_output<<<1, 1>>>(nums, lens, idx);
+    // cudaDeviceSynchronize();
+    float *nums_cpu = NULL;
+    nums_cpu = (float*) malloc(lens * float_size);
+    cudaMemcpy(nums_cpu, nums, lens * float_size, cudaMemcpyDeviceToHost);
+    printf("%f\n", nums_cpu[idx]);
+    free(nums_cpu);
+}

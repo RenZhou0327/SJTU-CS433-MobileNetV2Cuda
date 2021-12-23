@@ -134,4 +134,7 @@ void move_imgs(float* input, float** imgs, int len);
 // 测试模型读入权重是否正确
 void test_read_data();
 
+// 测试模型输出值
+void test_output_data(float* nums, int lens, int idx);
+
 #endif

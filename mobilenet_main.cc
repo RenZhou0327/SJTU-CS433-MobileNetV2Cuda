@@ -101,17 +101,30 @@ void inference(float *input, float *output)
     int k_shape = 3, out_c = 32;
     int stride = 2, pad = 1;
     // Block1
+    // conv2d + relu6()
     conv2d(in_tensor, &out_tensor, w1, b1, in_shape, in_c, k_shape, out_c, stride, pad);
-    exit(0);
-    relu6();
+    // relu6();
     in_tensor = out_tensor;
     out_tensor = NULL;
+    // printf("addr: %p %p\n", in_tensor, out_tensor);
+    // test_output_data(in_tensor, 32 * 122 * 122, 71680);
+    // exit(0);
 
     // Block2:
-    depth_wise_conv();
-    relu6();
-    point_wise_conv();
+    in_shape = 122, in_c = 32;
+    k_shape = 3, out_c = 32;
+    stride = 1, pad = 1;
+    depth_wise_conv(in_tensor, &out_tensor, w2, b2, in_shape, in_c, k_shape, out_c, stride, pad);
+    // relu6();
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+    printf("addr: %p %p\n", in_tensor, out_tensor);
+    test_output_data(in_tensor, 32 * 122 * 122, 71680);
+    exit(0);
 
+    // point_wise_conv();
+
+/*
     // Block3:
     point_wise_conv();
     relu6();
@@ -251,5 +264,6 @@ void inference(float *input, float *output)
     // Block20:
     avg_pool();
     linear_layer();
-    
+*/
+
 }
