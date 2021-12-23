@@ -97,9 +97,16 @@ void inference(float *input, float *output)
     float *in_tensor = NULL, *out_tensor = NULL;
     move_imgs(input, &in_tensor, INPUTSHAPE);
 
+    int in_shape = 244, in_c = 3;
+    int k_shape = 3, out_c = 32;
+    int stride = 2, pad = 1;
     // Block1
-    conv2d();
+    conv2d(in_tensor, &out_tensor, w1, b1, in_shape, in_c, k_shape, out_c, stride, pad);
+    exit(0);
+    cudaFree(in_tensor);
     relu6();
+    in_tensor = out_tensor;
+    out_tensor = NULL;
 
     // Block2:
     depth_wise_conv();
