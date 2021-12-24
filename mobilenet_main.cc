@@ -124,8 +124,12 @@ void inference(float *input, float *output)
 
     in_shape = 122, in_c = 32;
     k_shape = 1, out_c = 16;
-    stride = 1, pad = 0; 
-    point_wise_conv(in_tensor, &out_tensor, w3, b3, in_shape, in_c, out_c);
+    stride = 1, pad = 0;
+    point_wise_conv(in_tensor, &out_tensor, w3, b3, in_shape, in_c, out_c, false);
+    
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+    // exit(0);
 
 /*
     // Block3:

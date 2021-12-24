@@ -1,5 +1,6 @@
 #include "layers.cuh"
 
+__constant__ float const_bias[1280];
 
 void check_layer_data(float* out_tensor, int out_lens, int idx, char* file_name) {
     cudaError_t err = cudaSuccess;
@@ -199,11 +200,11 @@ __global__ void add_bias(float* WX, float *B, int out_c, int out_shape)
     int thread_i = blockIdx.y;
     int num_id = thread_i * out_c * out_shape + thread_j;
     int b_id = num_id / (out_shape * out_shape);
-    WX[num_id] += B[b_id];
+    WX[num_id] += const_bias[b_id];
 }
 
 
-void point_wise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_shape, int in_c, int out_c)
+void point_wise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_shape, int in_c, int out_c, bool is_relu)
 {
     int out_shape = in_shape;
     float *in_cols = NULL;
@@ -233,12 +234,20 @@ void point_wise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b,
 
     dim3 gDim_bias(out_shape, out_shape);
     dim3 bDim_bias(out_c, 1);
-    add_bias<<<gDim_bias, bDim_bias>>>(out_tensor, b, out_c, out_shape);
+
+    err = cudaMemcpyToSymbol(const_bias, b, out_c * sizeof(float), 0, cudaMemcpyDeviceToDevice);
+    assert(err == cudaSuccess);
+    if (is_relu) {
+        add_bias_relu6<<<gDim_bias, bDim_bias>>>(out_tensor, b, out_c, out_shape);
+    }
+    else {
+        add_bias<<<gDim_bias, bDim_bias>>>(out_tensor, b, out_c, out_shape);
+    }
     cudaFree(b);
 
     *out_tensor_p = out_tensor;
-    check_layer_data(out_tensor, out_lens, 0, "./tmpfiles/480.txt");
-
+    // check_layer_data(out_tensor, out_lens, 0, "./tmpfiles/480.txt");
+    // exit(0);
 };
 
 void add_layer() {};
