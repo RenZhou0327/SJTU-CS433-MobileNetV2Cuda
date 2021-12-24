@@ -118,11 +118,14 @@ void inference(float *input, float *output)
     // relu6();
     in_tensor = out_tensor;
     out_tensor = NULL;
-    printf("addr: %p %p\n", in_tensor, out_tensor);
-    test_output_data(in_tensor, 32 * 122 * 122, 71680);
-    exit(0);
+    // printf("addr: %p %p\n", in_tensor, out_tensor);
+    // test_output_data(in_tensor, 32 * 122 * 122, 71680);
+    // exit(0);
 
-    // point_wise_conv();
+    in_shape = 122, in_c = 32;
+    k_shape = 1, out_c = 16;
+    stride = 1, pad = 0; 
+    point_wise_conv(in_tensor, &out_tensor, w3, b3, in_shape, in_c, out_c);
 
 /*
     // Block3:

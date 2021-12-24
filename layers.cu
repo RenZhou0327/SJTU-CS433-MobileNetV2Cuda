@@ -1,6 +1,21 @@
 #include "layers.cuh"
 
 
+void check_layer_data(float* out_tensor, int out_lens, int idx, char* file_name) {
+    cudaError_t err = cudaSuccess;
+    float *temp = (float*) malloc(out_lens * sizeof(float));
+    err = cudaMemcpy(temp, out_tensor, out_lens * sizeof(float), cudaMemcpyDeviceToHost);
+    assert(err == cudaSuccess);
+    printf("%f\n", temp[idx]);
+    FILE *test_file = fopen(file_name, "w");
+    for (int i = 0; i < out_lens; ++i) {
+        fprintf(test_file, "%f ", temp[i]);
+    }
+    fprintf(test_file, "\n");
+    fclose(test_file);
+}
+
+
 __global__ void add_bias_relu6(float* WX, float *B, int out_c, int out_shape) 
 {
     // thread_j: [0, 122 * 32)
@@ -40,7 +55,8 @@ __global__ void img2col(float *imgs, float *cols, int in_shape, int out_shape, i
 }
 
 
-void mat_multiple(float *A, float *B, float* C, int m, int k, int n) {
+void mat_multiple(float *A, float *B, float* C, int m, int k, int n)
+{
 	cublasStatus_t status;
 	cublasHandle_t handle;
 
@@ -66,22 +82,11 @@ void conv2d(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_s
     int tIndx = 32, tIndy = k_shape * k_shape;
     // printf("%d %d %d %d %d\n", threadNum, bIndx, bIndy, tIndx, tIndy);
     // exit(0);
-    dim3 gDim1(bIndx, bIndy);
+    dim3 gDim(bIndx, bIndy);
     // !!! 特别注意, tIndx * tIndy得小于1024, 否则出错无结果!!!
-    dim3 bDim1(tIndx, tIndy);
-    img2col<<<gDim1, bDim1>>>(in_tensor, in_cols, in_shape, out_shape, k_shape, in_c, stride, pad);
+    dim3 bDim(tIndx, tIndy);
+    img2col<<<gDim, bDim>>>(in_tensor, in_cols, in_shape, out_shape, k_shape, in_c, stride, pad);
     cudaFree(in_tensor);
-
-    // // Just for Test:
-    // float *temp = (float*) malloc(threadNum * sizeof(float));
-    // err = cudaMemcpy(temp, in_cols, threadNum * sizeof(float), cudaMemcpyDeviceToHost);
-    // assert(err == cudaSuccess);
-    // printf("%f\n", temp[400868]);
-    // for (int i = 0; i < 10; ++i) {
-    //     printf("%f ", temp[10388]);
-    // }
-    // printf("\n");
-    // exit(0);
 
     float *out_tensor = NULL;
     int out_lens = out_c * out_shape * out_shape;
@@ -95,23 +100,10 @@ void conv2d(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_s
     assert(err == cudaSuccess);
 
     // printf("%d %d\n", out_c, out_shape);
-    dim3 gDim2(out_shape, out_shape);
-    dim3 bDim2(out_c, 1);
-    add_bias_relu6<<<gDim2, bDim2>>>(out_tensor, b, out_c, out_shape);
+    dim3 gDim_bias(out_shape, out_shape);
+    dim3 bDim_bias(out_c, 1);
+    add_bias_relu6<<<gDim_bias, bDim_bias>>>(out_tensor, b, out_c, out_shape);
     cudaFree(b);
-    
-    // // Just for Test:
-    // float *temp = (float*) malloc(out_lens * sizeof(float));
-    // err = cudaMemcpy(temp, out_tensor, out_lens * sizeof(float), cudaMemcpyDeviceToHost);
-    // assert(err == cudaSuccess);
-    // // printf("%f\n", temp[416288]);
-    // FILE *test_file = fopen("tmpfiles/317_relu.txt", "w");
-    // for (int i = 0; i < out_lens; ++i) {
-    //     fprintf(test_file, "%f ", temp[i]);
-    // }
-    // fprintf(test_file, "\n");
-    // fclose(test_file);
-    // exit(0);
     
     *out_tensor_p = out_tensor;
 };
@@ -181,27 +173,72 @@ void depth_wise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b,
     cudaFree(w);
     cudaFree(b);
 
-    // // Just for Test:
-    // float *temp = (float*) malloc(threadNum * sizeof(float));
-    // err = cudaMemcpy(temp, out_tensor, threadNum * sizeof(float), cudaMemcpyDeviceToHost);
-    // assert(err == cudaSuccess);
-    // // printf("%f\n", temp[416288]);
-    // FILE *test_file = fopen("tmpfiles/320_relu.txt", "w");
-    // for (int i = 0; i < threadNum; ++i) {
-    //     fprintf(test_file, "%f ", temp[i]);
-    // }
-    // fprintf(test_file, "\n");
-    // fclose(test_file);
-    // exit(0);
-
     *out_tensor_p = out_tensor;
 };
 
 
+__global__ void pw_img2col(float *imgs, float *cols, int shape, int in_c) {
+    
+    // dim3 gDim(in_c, in_shape);
+    // dim3 bDim(in_shape, 1);
+    int b_id = blockIdx.y * gridDim.x + blockIdx.x;
+    int t_id = threadIdx.x;    // w_idx
+    int num_id = b_id * blockDim.x + t_id;
+    int c_idx = num_id / (shape * shape);
+    b_id %= shape;  // h_idx
+    cols[c_idx * shape * shape + b_id * shape + t_id] = imgs[num_id];
+}
+
+
+__global__ void add_bias(float* WX, float *B, int out_c, int out_shape) 
+{
+    // dim3 gDim_bias(out_shape, out_shape);
+    // dim3 bDim_bias(out_c, 1);
+
+    int thread_j = blockIdx.x * blockDim.x + threadIdx.x;
+    int thread_i = blockIdx.y;
+    int num_id = thread_i * out_c * out_shape + thread_j;
+    int b_id = num_id / (out_shape * out_shape);
+    WX[num_id] += B[b_id];
+}
+
+
 void point_wise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_shape, int in_c, int out_c)
 {
-    // k_shape = 1, stride = 1, pad = 0
-    conv2d(in_tensor, out_tensor_p, w, b, in_shape, in_c, 1, out_c, 1, 0);
+    int out_shape = in_shape;
+    float *in_cols = NULL;
+
+    int threadNum = in_c * out_shape * out_shape;
+    cudaError_t err = cudaSuccess;
+    err = cudaMalloc((void**)&in_cols, threadNum * sizeof(float));
+    assert(err == cudaSuccess);
+
+    dim3 gDim(in_c, in_shape);
+    dim3 bDim(in_shape, 1);
+
+    pw_img2col<<<gDim, bDim>>>(in_tensor, in_cols, out_shape, in_c);
+    cudaFree(in_tensor);
+
+    float *out_tensor = NULL;
+    int out_lens = out_c * out_shape * out_shape;
+
+    int mat_m = out_c, mat_k = in_c, mat_n = out_shape * out_shape;
+    err = cudaMalloc((void**)&out_tensor, out_lens * sizeof(float));
+    assert(err == cudaSuccess);
+    mat_multiple(w, in_cols, out_tensor, mat_m, mat_k, mat_n);
+    err = cudaFree(w);
+    assert(err == cudaSuccess);
+    err = cudaFree(in_cols);
+    assert(err == cudaSuccess);
+
+    dim3 gDim_bias(out_shape, out_shape);
+    dim3 bDim_bias(out_c, 1);
+    add_bias<<<gDim_bias, bDim_bias>>>(out_tensor, b, out_c, out_shape);
+    cudaFree(b);
+
+    *out_tensor_p = out_tensor;
+    check_layer_data(out_tensor, out_lens, 0, "./tmpfiles/480.txt");
+
 };
 
 void add_layer() {};
