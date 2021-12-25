@@ -7,6 +7,7 @@ void check_layer_data(float* out_tensor, int out_lens, int idx, char* file_name)
     cudaError_t err = cudaSuccess;
     float *temp = (float*) malloc(out_lens * sizeof(float));
     err = cudaMemcpy(temp, out_tensor, out_lens * sizeof(float), cudaMemcpyDeviceToHost);
+    // printf("%d %s.\n", err, cudaGetErrorString(err));
     assert(err == cudaSuccess);
     printf("%f\n", temp[idx]);
     FILE *test_file = fopen(file_name, "w");
@@ -39,8 +40,8 @@ __global__ void add_bias_relu6(float* WX, float *B, int out_c, int out_shape)
     int b_id = num_id / (out_shape * out_shape);
     WX[num_id] += const_bias[b_id];
     // RELU6
-    WX[num_id] = max(WX[num_id], 0.0);
-    WX[num_id] = min(WX[num_id], 6.0);
+    WX[num_id] = max(WX[num_id], 0.0f);
+    WX[num_id] = min(WX[num_id], 6.0f);
     // printf("%d %d\n", thread_i, thread_j);
 }
 
@@ -82,7 +83,7 @@ void mat_multiple(float *A, float *B, float* C, int m, int k, int n, const float
     in_s_t = clock();
     cublasSgemm(*handle_p, CUBLAS_OP_N, CUBLAS_OP_N, n, m, k, &al, B, n, A, k, &bt, C, n);
     in_e_t = clock();
-    printf("gemm inner: %lf\n", (double)(in_e_t - in_s_t) / CLOCKS_PER_SEC);
+    // printf("gemm inner: %lf\n", (double)(in_e_t - in_s_t) / CLOCKS_PER_SEC);
 }
 
 
@@ -107,7 +108,7 @@ void conv2d(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_s
     s_t = clock();
     img2col<<<gDim, bDim>>>(in_tensor, in_cols, in_shape, out_shape, k_shape, in_c, stride, pad);
     e_t = clock();
-    printf("img2col: %lf\n", (double)(e_t - s_t) / CLOCKS_PER_SEC);
+    // printf("img2col: %lf\n", (double)(e_t - s_t) / CLOCKS_PER_SEC);
     err = cudaFree(in_tensor);
     assert(err == cudaSuccess);
 
@@ -119,7 +120,7 @@ void conv2d(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_s
     s_t = clock();
     mat_multiple(w, in_cols, out_tensor, mat_m, mat_k, mat_n, 1.0f, 0.0f, handle_p);
     e_t = clock();
-    printf("gemm: %lf\n", (double)(e_t - s_t) / CLOCKS_PER_SEC);
+    // printf("gemm: %lf\n", (double)(e_t - s_t) / CLOCKS_PER_SEC);
     // err = cudaFree(w);
     // assert(err == cudaSuccess);
     err = cudaFree(in_cols);
@@ -133,15 +134,12 @@ void conv2d(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_s
     s_t = clock();
     add_bias_relu6<<<gDim_bias, bDim_bias>>>(out_tensor, b, out_c, out_shape);
     e_t = clock();
-    printf("add bias: %lf\n", (double)(e_t - s_t) / CLOCKS_PER_SEC);
+    // printf("add bias: %lf\n", (double)(e_t - s_t) / CLOCKS_PER_SEC);
     // err = cudaFree(b);
     // assert(err == cudaSuccess);
     
     *out_tensor_p = out_tensor;
 };
-
-
-void relu6() {};
 
 
 __global__ void depthwise_kernel(float *in_tensor, float *out_tensor, float *w, float *b, int in_shape, int out_shape, int k_shape, int c, int s, int p) {
@@ -275,8 +273,16 @@ void point_wise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b,
     err = cudaFree(in_cols);
     assert(err == cudaSuccess);
 
-    dim3 gDim_bias(out_shape, out_shape);
-    dim3 bDim_bias(out_c, 1);
+    int bIndx = out_shape, bIndy = out_shape;
+    int tIndx = out_c;
+    if (out_c > 1024) {
+        bIndx = out_shape * 2;
+        tIndx = ceil(tIndx / 2.0);
+        // printf("hello\n");
+    }
+
+    dim3 gDim_bias(bIndx, bIndy);
+    dim3 bDim_bias(tIndx, 1);
 
     err = cudaMemcpyToSymbol(const_bias, b, out_c * sizeof(float), 0, cudaMemcpyDeviceToDevice);
     assert(err == cudaSuccess);
@@ -329,15 +335,63 @@ void add_layer(float* A, float* B, float** C_p, int channels, int shape)
     *C_p = C;
 }
 
-void avg_pool() {};
-
-void linear_layer(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_len, int out_len)
+__global__ void avg_pool_kernel(float* in_tensor, float* out_tensor, int channels, int in_shape)
 {
-    // // W:(1000, 1280) X:(1, 1280) b:(1000,) Y:(1,1000)
-    // float* out_tensor = NULL;
-    // cudaError_t err = cudaMalloc((void**)&out_tensor, out_len * sizeof(float));
-    // assert(err == cudaSuccess);
-    // mat_multiple(w, in_tensor, b, out_len, in_len, 1, );
+    // dim3 gDim(ceil(channels / 512.0), 1);
+    // dim3 bDim(32, 16);
+    int thread_j = blockIdx.x * blockDim.x + threadIdx.x;
+    int thread_i = blockIdx.y * blockDim.y + threadIdx.y;
+    // `out_idx` also means which slice of in_tensor we are now avgpooling
+    int out_idx = thread_i * gridDim.x * blockDim.x + thread_j;
 
-    // *out_tensor_p = out_tensor;
+    float sum = 0.0f;
+    for (int i = 0; i < in_shape; ++i)
+    {
+        for (int j = 0; j < in_shape; ++j)
+        {
+            // TODO: 有什么可以优化的吗，比如in_tensor数组取值？
+            sum += in_tensor[out_idx * in_shape * in_shape + i * in_shape + j];
+        }
+    }
+    int divisor = in_shape * in_shape; // num of total grids in one channel of in_tensor
+    out_tensor[out_idx] = sum / divisor;
+}
+
+void avg_pool(float* in_tensor, float** out_tensor_p, int channels, int in_shape)
+{
+    // TODO:可能可以改变gDim和bDim,应用上share memory
+    // TODO:将所有的dim3都加上ceil
+    dim3 gDim(ceil(channels / 512.0), 1);
+    dim3 bDim(32, 16);
+
+    float* out_tensor = nullptr;
+    cudaError_t err = cudaSuccess;
+    err = cudaMalloc((void**)&out_tensor, channels * sizeof(float));
+    assert(err == cudaSuccess);
+
+    avg_pool_kernel<<<gDim, bDim>>>(in_tensor, out_tensor, channels, in_shape);
+
+    err = cudaFree(in_tensor);
+    assert(err == cudaSuccess);
+    *out_tensor_p = out_tensor;
+}
+
+
+void linear_layer(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_len, int out_len, cublasHandle_t* handle_p)
+{
+    // W:(1000, 1280) X:(1, 1280) b:(1000,) Y:(1,1000)
+    float* out_tensor = NULL;
+    cudaError_t err = cudaSuccess;
+    err = cudaMalloc((void**)&out_tensor, out_len * sizeof(float));
+    assert(err == cudaSuccess);
+    mat_multiple(w, in_tensor, out_tensor, out_len, in_len, 1, 1.0f, 0.0f, handle_p);
+    
+    err = cudaMemcpyToSymbol(const_bias, b, out_len * sizeof(float), 0, cudaMemcpyDeviceToDevice);
+    // printf("%d %s.\n", err, cudaGetErrorString(err));
+    assert(err == cudaSuccess);
+    dim3 gDim_bias(10, 1);
+    dim3 bDim_bias(ceil(out_len / 10.0), 1);
+    add_bias<<<gDim_bias, bDim_bias>>>(out_tensor, b, out_len, 1);
+
+    *out_tensor_p = out_tensor;
 };

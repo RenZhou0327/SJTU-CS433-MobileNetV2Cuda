@@ -116,8 +116,6 @@ float *w52, *b52;
 float *w53, *b53;
 
 
-
-
 void alloc_mem() {
     w1 = (float*) malloc(w1_len * float_size); b1 = (float*) malloc(b1_len * float_size);
     w2 = (float*) malloc(w2_len * float_size); b2 = (float*) malloc(b2_len * float_size);
@@ -391,12 +389,64 @@ void test_read_data() {
     printf("%f %f\n", w53[w53_len - 1], b53[b53_len - 1]);
 }
 
-// __global__ void print_output(float* nums, int lens, int idx) {
-//     for (int i = 0; i < idx; ++i) {
-//         printf("%f ", nums[i]);
-//     }
-//     printf("\n");
-// }
+
+void free_memory() {
+    cudaError_t err;
+    err = cudaFree(w1); assert(err == cudaSuccess); err = cudaFree(b1); assert(err == cudaSuccess);
+    err = cudaFree(w2); assert(err == cudaSuccess); err = cudaFree(b2); assert(err == cudaSuccess);
+    err = cudaFree(w3); assert(err == cudaSuccess); err = cudaFree(b3); assert(err == cudaSuccess);
+    err = cudaFree(w4); assert(err == cudaSuccess); err = cudaFree(b4); assert(err == cudaSuccess);
+    err = cudaFree(w5); assert(err == cudaSuccess); err = cudaFree(b5); assert(err == cudaSuccess);
+    err = cudaFree(w6); assert(err == cudaSuccess); err = cudaFree(b6); assert(err == cudaSuccess);
+    err = cudaFree(w7); assert(err == cudaSuccess); err = cudaFree(b7); assert(err == cudaSuccess);
+    err = cudaFree(w8); assert(err == cudaSuccess); err = cudaFree(b8); assert(err == cudaSuccess);
+    err = cudaFree(w9); assert(err == cudaSuccess); err = cudaFree(b9); assert(err == cudaSuccess);
+    err = cudaFree(w10); assert(err == cudaSuccess); err = cudaFree(b10); assert(err == cudaSuccess);
+    err = cudaFree(w11); assert(err == cudaSuccess); err = cudaFree(b11); assert(err == cudaSuccess);
+    err = cudaFree(w12); assert(err == cudaSuccess); err = cudaFree(b12); assert(err == cudaSuccess);
+    err = cudaFree(w13); assert(err == cudaSuccess); err = cudaFree(b13); assert(err == cudaSuccess);
+    err = cudaFree(w14); assert(err == cudaSuccess); err = cudaFree(b14); assert(err == cudaSuccess);
+    err = cudaFree(w15); assert(err == cudaSuccess); err = cudaFree(b15); assert(err == cudaSuccess);
+    err = cudaFree(w16); assert(err == cudaSuccess); err = cudaFree(b16); assert(err == cudaSuccess);
+    err = cudaFree(w17); assert(err == cudaSuccess); err = cudaFree(b17); assert(err == cudaSuccess);
+    err = cudaFree(w18); assert(err == cudaSuccess); err = cudaFree(b18); assert(err == cudaSuccess);
+    err = cudaFree(w19); assert(err == cudaSuccess); err = cudaFree(b19); assert(err == cudaSuccess);
+    err = cudaFree(w20); assert(err == cudaSuccess); err = cudaFree(b20); assert(err == cudaSuccess);
+    err = cudaFree(w21); assert(err == cudaSuccess); err = cudaFree(b21); assert(err == cudaSuccess);
+    err = cudaFree(w22); assert(err == cudaSuccess); err = cudaFree(b22); assert(err == cudaSuccess);
+    err = cudaFree(w23); assert(err == cudaSuccess); err = cudaFree(b23); assert(err == cudaSuccess);
+    err = cudaFree(w24); assert(err == cudaSuccess); err = cudaFree(b24); assert(err == cudaSuccess);
+    err = cudaFree(w25); assert(err == cudaSuccess); err = cudaFree(b25); assert(err == cudaSuccess);
+    err = cudaFree(w26); assert(err == cudaSuccess); err = cudaFree(b26); assert(err == cudaSuccess);
+    err = cudaFree(w27); assert(err == cudaSuccess); err = cudaFree(b27); assert(err == cudaSuccess);
+    err = cudaFree(w28); assert(err == cudaSuccess); err = cudaFree(b28); assert(err == cudaSuccess);
+    err = cudaFree(w29); assert(err == cudaSuccess); err = cudaFree(b29); assert(err == cudaSuccess);
+    err = cudaFree(w30); assert(err == cudaSuccess); err = cudaFree(b30); assert(err == cudaSuccess);
+    err = cudaFree(w31); assert(err == cudaSuccess); err = cudaFree(b31); assert(err == cudaSuccess);
+    err = cudaFree(w32); assert(err == cudaSuccess); err = cudaFree(b32); assert(err == cudaSuccess);
+    err = cudaFree(w33); assert(err == cudaSuccess); err = cudaFree(b33); assert(err == cudaSuccess);
+    err = cudaFree(w34); assert(err == cudaSuccess); err = cudaFree(b34); assert(err == cudaSuccess);
+    err = cudaFree(w35); assert(err == cudaSuccess); err = cudaFree(b35); assert(err == cudaSuccess);
+    err = cudaFree(w36); assert(err == cudaSuccess); err = cudaFree(b36); assert(err == cudaSuccess);
+    err = cudaFree(w37); assert(err == cudaSuccess); err = cudaFree(b37); assert(err == cudaSuccess);
+    err = cudaFree(w38); assert(err == cudaSuccess); err = cudaFree(b38); assert(err == cudaSuccess);
+    err = cudaFree(w39); assert(err == cudaSuccess); err = cudaFree(b39); assert(err == cudaSuccess);
+    err = cudaFree(w40); assert(err == cudaSuccess); err = cudaFree(b40); assert(err == cudaSuccess);
+    err = cudaFree(w41); assert(err == cudaSuccess); err = cudaFree(b41); assert(err == cudaSuccess);
+    err = cudaFree(w42); assert(err == cudaSuccess); err = cudaFree(b42); assert(err == cudaSuccess);
+    err = cudaFree(w43); assert(err == cudaSuccess); err = cudaFree(b43); assert(err == cudaSuccess);
+    err = cudaFree(w44); assert(err == cudaSuccess); err = cudaFree(b44); assert(err == cudaSuccess);
+    err = cudaFree(w45); assert(err == cudaSuccess); err = cudaFree(b45); assert(err == cudaSuccess);
+    err = cudaFree(w46); assert(err == cudaSuccess); err = cudaFree(b46); assert(err == cudaSuccess);
+    err = cudaFree(w47); assert(err == cudaSuccess); err = cudaFree(b47); assert(err == cudaSuccess);
+    err = cudaFree(w48); assert(err == cudaSuccess); err = cudaFree(b48); assert(err == cudaSuccess);
+    err = cudaFree(w49); assert(err == cudaSuccess); err = cudaFree(b49); assert(err == cudaSuccess);
+    err = cudaFree(w50); assert(err == cudaSuccess); err = cudaFree(b50); assert(err == cudaSuccess);
+    err = cudaFree(w51); assert(err == cudaSuccess); err = cudaFree(b51); assert(err == cudaSuccess);
+    err = cudaFree(w52); assert(err == cudaSuccess); err = cudaFree(b52); assert(err == cudaSuccess);
+    err = cudaFree(w53); assert(err == cudaSuccess); err = cudaFree(b53); assert(err == cudaSuccess);
+}
+
 
 void test_output_data(float* nums, int lens, int idx) {
     // print_output<<<1, 1>>>(nums, lens, idx);

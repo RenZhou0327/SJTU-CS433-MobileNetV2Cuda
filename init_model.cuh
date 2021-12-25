@@ -144,4 +144,7 @@ void test_read_data();
 // 测试模型输出值
 void test_output_data(float* nums, int lens, int idx);
 
+// 释放内存
+void free_memory();
+
 #endif
