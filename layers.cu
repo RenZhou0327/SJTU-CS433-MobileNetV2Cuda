@@ -181,7 +181,7 @@ __global__ void depthwise_kernel(float *in_tensor, float *out_tensor, float *w, 
 }
 
 
-void depth_wise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_shape, int in_c, int k_shape, int out_c, int stride, int pad, bool is_log)
+void depthwise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_shape, int in_c, int k_shape, int out_c, int stride, int pad, bool is_log)
 {
     int out_shape = int((in_shape + 2 * pad - k_shape) / stride) + 1;
     // printf("%d %d %d %d %d %d\n", in_shape, in_c, k_shape, out_c, stride, pad);
@@ -243,7 +243,7 @@ __global__ void add_bias(float* WX, float *B, int out_c, int out_shape)
 }
 
 
-void point_wise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_shape, int in_c, int out_c, bool is_relu, bool is_log, cublasHandle_t* handle_p)
+void pointwise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_shape, int in_c, int out_c, bool is_relu, bool is_log, cublasHandle_t* handle_p)
 {
     int out_shape = in_shape;
     float *in_cols = NULL;
@@ -267,9 +267,6 @@ void point_wise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b,
     err = cudaMalloc((void**)&out_tensor, out_lens * sizeof(float));
     assert(err == cudaSuccess);
     mat_multiple(w, in_cols, out_tensor, mat_m, mat_k, mat_n, 1.0f, 0.0f, handle_p);
-    // err = cudaFree(w);
-    // printf("%s\n", cudaGetErrorString(err));
-    // assert(err == cudaSuccess);
     err = cudaFree(in_cols);
     assert(err == cudaSuccess);
 
@@ -359,12 +356,12 @@ __global__ void avg_pool_kernel(float* in_tensor, float* out_tensor, int channel
 
 void avg_pool(float* in_tensor, float** out_tensor_p, int channels, int in_shape)
 {
-    // TODO:可能可以改变gDim和bDim,应用上share memory
+    // TODO:可能可以改变gDim和bDim, 应用上share memory
     // TODO:将所有的dim3都加上ceil
     dim3 gDim(ceil(channels / 512.0), 1);
     dim3 bDim(32, 16);
 
-    float* out_tensor = nullptr;
+    float* out_tensor = NULL;
     cudaError_t err = cudaSuccess;
     err = cudaMalloc((void**)&out_tensor, channels * sizeof(float));
     assert(err == cudaSuccess);

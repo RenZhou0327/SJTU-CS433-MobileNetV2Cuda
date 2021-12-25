@@ -8,8 +8,8 @@
 #include<cublas_v2.h>
 
 void conv2d(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_shape, int in_c, int k_shape, int out_c, int stride, int pad, cublasHandle_t* handle_p);
-void depth_wise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_shape, int in_c, int k_shape, int out_c, int stride, int pad, bool is_log);
-void point_wise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_shape, int in_c, int out_c, bool is_relu, bool is_log, cublasHandle_t* handle_p);
+void depthwise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_shape, int in_c, int k_shape, int out_c, int stride, int pad, bool is_log);
+void pointwise_conv(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_shape, int in_c, int out_c, bool is_relu, bool is_log, cublasHandle_t* handle_p);
 void add_layer(float* A, float* B, float** C_p, int channels, int shape);
 void avg_pool(float* in_tensor, float** out_tensor_p, int channels, int in_shape);
 void linear_layer(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_len, int out_len, cublasHandle_t* handle_p);
