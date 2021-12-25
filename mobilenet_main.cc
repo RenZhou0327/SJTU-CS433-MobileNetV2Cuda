@@ -96,6 +96,7 @@ void initModel() {
 
 void inference(float *input, float *output)
 {
+
     // 注意这里imgs是CHW格式
     float *in_tensor = NULL, *out_tensor = NULL, *backup_tensor = NULL;
     st = clock();
@@ -104,13 +105,13 @@ void inference(float *input, float *output)
     // printf("move_img: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
 
    
-    // Block1
+    // Block1   conv2d + relu6
     int in_shape = 244, in_c = 3;
     int k_shape = 3, out_c = 32;
     int stride = 2, pad = 1;
     int out_lens = 32 * 122 * 122;
     bool is_relu, is_log = false;
-    // conv2d + relu6()
+
     st = clock();
     conv2d(in_tensor, &out_tensor, w1, b1, in_shape, in_c, k_shape, out_c, stride, pad, &handle);
     et = clock();
@@ -119,7 +120,7 @@ void inference(float *input, float *output)
     out_tensor = NULL;
 
 
-    // Block2:
+    // Block2: dw_conv + relu6 + pw_conv
     in_shape = 122, in_c = 32;
     k_shape = 3, out_c = 32;
     stride = 1, pad = 1;
@@ -143,7 +144,8 @@ void inference(float *input, float *output)
     in_tensor = out_tensor;
     out_tensor = NULL;
 
-    // Block3:
+
+    // Block3: pw_conv + relu6 + dw_conv + relu6 + pw_conv
     in_shape = 122, in_c = 16;
     k_shape = 1, out_c = 96;
     stride = 1, pad = 0;
@@ -182,9 +184,10 @@ void inference(float *input, float *output)
     in_tensor = out_tensor;
     out_tensor = NULL;
 
+    // store tensor used in add layer
     store_back_up(in_tensor, &backup_tensor, out_lens);
 
-    // Block4:
+    // Block4:  pw_conv + relu6 + dw_conv + relu6 + pw_conv + skip_conn
     in_shape = 61, in_c = 24;
     k_shape = 1, out_c = 144;
     stride = 1, pad = 0;
@@ -225,6 +228,7 @@ void inference(float *input, float *output)
     in_tensor = out_tensor;
     out_tensor = NULL;
 
+    // skip connection
     in_shape = 61;
     in_c = 24;
     st = clock();
@@ -236,6 +240,8 @@ void inference(float *input, float *output)
     in_tensor = out_tensor;
     out_tensor = NULL;
 
+
+    // Block5: pw_conv + relu6 + dw_conv + relu6 + pw_conv
     in_shape = 61, in_c = 24;
     k_shape = 1, out_c = 144;
     stride = 1, pad = 0;
@@ -280,7 +286,7 @@ void inference(float *input, float *output)
     store_back_up(in_tensor, &backup_tensor, out_lens);
 
 
-    // Block6:
+    // Block6: pw_conv + relu6 + dw_conv + relu6 + pw_conv + skip_conn
     in_shape = 31, in_c = 32;
     k_shape = 1, out_c = 192;
     stride = 1, pad = 0;
@@ -336,7 +342,8 @@ void inference(float *input, float *output)
 
     store_back_up(in_tensor, &backup_tensor, out_lens);
 
-    // Block7:
+
+    // Block7:  pw_conv + relu6 + dw_conv + relu6 + pw_conv + skip_conn
     in_shape = 31, in_c = 32;
     k_shape = 1, out_c = 192;
     stride = 1, pad = 0;
@@ -350,7 +357,6 @@ void inference(float *input, float *output)
     // exit(0);
     in_tensor = out_tensor;
     out_tensor = NULL;
-
 
     in_shape = 31, in_c = 192;
     k_shape = 3, out_c = 192;
@@ -391,7 +397,7 @@ void inference(float *input, float *output)
     out_tensor = NULL;
 
 
-    // Block8:
+    // Block8: pw_conv + relu6 + dw_conv + relu6 + pw_conv
     in_shape = 31, in_c = 32;
     k_shape = 1, out_c = 192;
     stride = 1, pad = 0;
@@ -435,7 +441,8 @@ void inference(float *input, float *output)
 
     store_back_up(in_tensor, &backup_tensor, out_lens);
 
-    // Block9:
+
+    // Block9: pw_conv + relu6 + dw_conv + relu6 + pw_conv + skip_conn
     in_shape = 16, in_c = 64;
     k_shape = 1, out_c = 384;
     stride = 1, pad = 0;
@@ -449,7 +456,6 @@ void inference(float *input, float *output)
     // exit(0);
     in_tensor = out_tensor;
     out_tensor = NULL;
-
 
     in_shape = 16, in_c = 384;
     k_shape = 3, out_c = 384;
@@ -489,11 +495,10 @@ void inference(float *input, float *output)
     in_tensor = out_tensor;
     out_tensor = NULL;
 
-
     store_back_up(in_tensor, &backup_tensor, out_lens);
 
 
-    // Block10:
+    // Block10: pw_conv + relu6 + dw_conv + relu6 + pw_conv + skip_conn
     in_shape = 16, in_c = 64;
     k_shape = 1, out_c = 384;
     stride = 1, pad = 0;
@@ -507,7 +512,6 @@ void inference(float *input, float *output)
     // exit(0);
     in_tensor = out_tensor;
     out_tensor = NULL;
-
 
     in_shape = 16, in_c = 384;
     k_shape = 3, out_c = 384;
@@ -549,7 +553,8 @@ void inference(float *input, float *output)
 
     store_back_up(in_tensor, &backup_tensor, out_lens);
 
-    // Block11:
+
+    // Block11: pw_conv + relu6 + dw_conv + relu6 + pw_conv + skip_conn
     in_shape = 16, in_c = 64;
     k_shape = 1, out_c = 384;
     stride = 1, pad = 0;
@@ -563,7 +568,6 @@ void inference(float *input, float *output)
     // exit(0);
     in_tensor = out_tensor;
     out_tensor = NULL;
-
 
     in_shape = 16, in_c = 384;
     k_shape = 3, out_c = 384;
@@ -604,7 +608,7 @@ void inference(float *input, float *output)
     out_tensor = NULL;
 
 
-    // Block12:
+    // Block12: pw_conv + relu6 + dw_conv + relu6 + pw_conv
     in_shape = 16, in_c = 64;
     k_shape = 1, out_c = 384;
     stride = 1, pad = 0;
@@ -649,7 +653,7 @@ void inference(float *input, float *output)
     store_back_up(in_tensor, &backup_tensor, out_lens);
 
 
-    // Block13:
+    // Block13: pw_conv + relu6 + dw_conv + relu6 + pw_conv + skip_conn
     in_shape = 16, in_c = 96;
     k_shape = 1, out_c = 576;
     stride = 1, pad = 0;
@@ -705,7 +709,7 @@ void inference(float *input, float *output)
     store_back_up(in_tensor, &backup_tensor, out_lens);
 
 
-    // Block14:
+    // Block14: pw_conv + relu6 + dw_conv + relu6 + pw_conv + skip_conn
     in_shape = 16, in_c = 96;
     k_shape = 1, out_c = 576;
     stride = 1, pad = 0;
@@ -759,7 +763,7 @@ void inference(float *input, float *output)
     out_tensor = NULL;
 
 
-    // Block15:
+    // Block15: pw_conv + relu6 + dw_conv + relu6 + pw_conv
     in_shape = 16, in_c = 96;
     k_shape = 1, out_c = 576;
     stride = 1, pad = 0;
@@ -803,7 +807,8 @@ void inference(float *input, float *output)
 
     store_back_up(in_tensor, &backup_tensor, out_lens);
 
-    // Block16:
+
+    // Block16: pw_conv + relu6 + dw_conv + relu6 + pw_conv + skip_conn
     in_shape = 8, in_c = 160;
     k_shape = 1, out_c = 960;
     stride = 1, pad = 0;
@@ -858,7 +863,8 @@ void inference(float *input, float *output)
 
     store_back_up(in_tensor, &backup_tensor, out_lens);
 
-    // Block17:
+
+    // Block17: pw_conv + relu6 + dw_conv + relu6 + pw_conv + skip_conn
     in_shape = 8, in_c = 160;
     k_shape = 1, out_c = 960;
     stride = 1, pad = 0;
@@ -912,7 +918,7 @@ void inference(float *input, float *output)
     out_tensor = NULL;
 
 
-    // Block18:
+    // Block18: pw_conv + relu6 + dw_conv + relu6 + pw_conv
     in_shape = 8, in_c = 160;
     k_shape = 1, out_c = 960;
     stride = 1, pad = 0;
@@ -954,7 +960,8 @@ void inference(float *input, float *output)
     in_tensor = out_tensor;
     out_tensor = NULL;
 
-    // Block19:
+
+    // Block19: pw_conv
     in_shape = 8, in_c = 320;
     k_shape = 1, out_c = 1280;
     stride = 1, pad = 0;
@@ -969,7 +976,8 @@ void inference(float *input, float *output)
     in_tensor = out_tensor;
     out_tensor = NULL;
 
-    // Block20:
+
+    // Block20: global_avg_pool + linear
     in_shape = 8;
     in_c = 1280;
     out_lens = 1280;
@@ -991,4 +999,5 @@ void inference(float *input, float *output)
     // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/473.txt");
     // exit(0);
     cudaMemcpy(output, out_tensor, out_lens * sizeof(float), cudaMemcpyDeviceToHost);
+    
 }

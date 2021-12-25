@@ -132,10 +132,10 @@ void alloc_mem();
 // 读取weight和bias
 void read_params();
 
-// 移动到cuda上
+// 移动到gpu上
 void move_params();
 
-// 移动图片到cuda上
+// 移动图片到gpu上
 void move_imgs(float* input, float** imgs, int len);
 
 // 测试模型读入权重是否正确
