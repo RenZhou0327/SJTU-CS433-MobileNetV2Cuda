@@ -3,7 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cuda_runtime.h>
+#include<cublas_v2.h>
+#include <time.h>
 #include <assert.h>
+
+
+extern time_t st, et;
+extern cublasStatus_t status;
+extern cublasHandle_t handle;
 
 
 extern const int w1_len, b1_len;

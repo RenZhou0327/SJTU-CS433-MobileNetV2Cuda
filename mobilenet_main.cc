@@ -3,6 +3,7 @@
 #include <math.h>
 #include <cuda.h>
 #include <cuda_runtime.h>
+#include <time.h>
 #include "init_model.cuh"
 #include "layers.cuh"
 
@@ -94,15 +95,24 @@ void initModel() {
 void inference(float *input, float *output)
 {
     // 注意这里imgs是CHW格式
-    float *in_tensor = NULL, *out_tensor = NULL;
+    float *in_tensor = NULL, *out_tensor = NULL, *backup_tensor = NULL;
+    st = clock();
     move_imgs(input, &in_tensor, INPUTSHAPE);
+    et = clock();
+    printf("move_img: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
 
+   
+    // Block1
     int in_shape = 244, in_c = 3;
     int k_shape = 3, out_c = 32;
     int stride = 2, pad = 1;
-    // Block1
+    int out_lens = 32 * 122 * 122;
+    bool is_relu, is_log = false;
     // conv2d + relu6()
-    conv2d(in_tensor, &out_tensor, w1, b1, in_shape, in_c, k_shape, out_c, stride, pad);
+    st = clock();
+    conv2d(in_tensor, &out_tensor, w1, b1, in_shape, in_c, k_shape, out_c, stride, pad, &handle);
+    et = clock();
+    printf("conv1: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
     // relu6();
     in_tensor = out_tensor;
     out_tensor = NULL;
@@ -114,7 +124,11 @@ void inference(float *input, float *output)
     in_shape = 122, in_c = 32;
     k_shape = 3, out_c = 32;
     stride = 1, pad = 1;
-    depth_wise_conv(in_tensor, &out_tensor, w2, b2, in_shape, in_c, k_shape, out_c, stride, pad);
+    out_lens = 32 * 122 * 122;
+    st = clock();
+    depth_wise_conv(in_tensor, &out_tensor, w2, b2, in_shape, in_c, k_shape, out_c, stride, pad, is_log);
+    et = clock();
+    printf("conv2: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
     // relu6();
     in_tensor = out_tensor;
     out_tensor = NULL;
@@ -125,54 +139,267 @@ void inference(float *input, float *output)
     in_shape = 122, in_c = 32;
     k_shape = 1, out_c = 16;
     stride = 1, pad = 0;
-    point_wise_conv(in_tensor, &out_tensor, w3, b3, in_shape, in_c, out_c, false);
-    
+    out_lens =  16 * 122 * 122;
+    st = clock();
+    is_relu = false;
+    point_wise_conv(in_tensor, &out_tensor, w3, b3, in_shape, in_c, out_c, is_relu, is_log, &handle);
+    et = clock();
+    printf("conv3: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+
+    // Block3:
+    in_shape = 122, in_c = 16;
+    k_shape = 1, out_c = 96;
+    stride = 1, pad = 0;
+    out_lens = 96 * 122 * 122;
+    is_relu = true;
+    st = clock();
+    point_wise_conv(in_tensor, &out_tensor, w4, b4, in_shape, in_c, out_c, is_relu, is_log, &handle);
+    et = clock();
+    printf("conv4: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, 1000, "./tmpfiles/325_relu.txt");
     in_tensor = out_tensor;
     out_tensor = NULL;
     // exit(0);
 
-/*
-    // Block3:
-    point_wise_conv();
-    relu6();
-    depth_wise_conv();
-    relu6();
-    point_wise_conv();
+    // relu6();
+    in_shape = 122, in_c = 96;
+    k_shape = 3, out_c = 96;
+    stride = 2, pad = 1;
+    out_lens = 96 * 61 * 61;
+    st = clock();
+    depth_wise_conv(in_tensor, &out_tensor, w5, b5, in_shape, in_c, k_shape, out_c, stride, pad, is_log);
+    et = clock();
+    printf("conv5: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, 1000, "./tmpfiles/486.txt");
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+
+    in_shape = 61, in_c = 96;
+    k_shape = 1, out_c = 24;
+    stride = 1, pad = 0;
+    out_lens = 24 * 61 * 61;
+    is_relu = false;
+    st = clock();
+    point_wise_conv(in_tensor, &out_tensor, w6, b6, in_shape, in_c, out_c, is_relu, is_log, &handle);
+    et = clock();
+    printf("conv6: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/489.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+
+    store_back_up(in_tensor, &backup_tensor, out_lens);
+
 
     // Block4:
-    point_wise_conv();
-    relu6();
-    depth_wise_conv();
-    relu6();
-    point_wise_conv();
+    in_shape = 61, in_c = 24;
+    k_shape = 1, out_c = 144;
+    stride = 1, pad = 0;
+    out_lens = 144 * 61 * 61;
+    is_relu = true;
+    st = clock();
+    point_wise_conv(in_tensor, &out_tensor, w7, b7, in_shape, in_c, out_c, is_relu, is_log, &handle);
+    et = clock();
+    printf("conv7: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/333_relu.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
 
-    add_layer();
+    in_shape = 61, in_c = 144;
+    k_shape = 3, out_c = 144;
+    stride = 1, pad = 1;
+    out_lens = 144 * 61 * 61;
+    st = clock();
+    depth_wise_conv(in_tensor, &out_tensor, w8, b8, in_shape, in_c, k_shape, out_c, stride, pad, is_log);
+    et = clock();
+    printf("conv8: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/336_relu.txt");
+    in_tensor = out_tensor;
+    out_tensor = NULL;
 
-    // Block5:
-    point_wise_conv();
-    relu6();
-    depth_wise_conv();
-    relu6();
-    point_wise_conv();
+    in_shape = 61, in_c = 144;
+    k_shape = 1, out_c = 24;
+    stride = 1, pad = 0;
+    out_lens = 24 * 61 * 61;
+    is_relu = false;
+    st = clock();
+    point_wise_conv(in_tensor, &out_tensor, w9, b9, in_shape, in_c, out_c, is_relu, is_log, &handle);
+    et = clock();
+    printf("conv9: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/498.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+
+    in_shape = 61;
+    in_c = 24;
+    st = clock();
+    add_layer(in_tensor, backup_tensor, &out_tensor, in_c, in_shape);
+    et = clock();
+    printf("add1: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/339.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+
+    in_shape = 61, in_c = 24;
+    k_shape = 1, out_c = 144;
+    stride = 1, pad = 0;
+    out_lens = 144 * 61 * 61;
+    is_relu = true;
+    st = clock();
+    point_wise_conv(in_tensor, &out_tensor, w10, b10, in_shape, in_c, out_c, is_relu, is_log, &handle);
+    et = clock();
+    printf("conv10: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/324.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+
+    in_shape = 61, in_c = 144;
+    k_shape = 3, out_c = 144;
+    stride = 2, pad = 1;
+    out_lens = 144 * 31 * 31;
+    st = clock();
+    depth_wise_conv(in_tensor, &out_tensor, w11, b11, in_shape, in_c, k_shape, out_c, stride, pad, is_log);
+    et = clock();
+    printf("conv11: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/345.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+
+    in_shape = 31, in_c = 144;
+    k_shape = 1, out_c = 32;
+    stride = 1, pad = 0;
+    out_lens = 32 * 31 * 31;
+    is_relu = false;
+    st = clock();
+    point_wise_conv(in_tensor, &out_tensor, w12, b12, in_shape, in_c, out_c, is_relu, is_log, &handle);
+    et = clock();
+    printf("conv12: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/507.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+
+    store_back_up(in_tensor, &backup_tensor, out_lens);
+
 
     // Block6:
-    point_wise_conv();
-    relu6();
-    depth_wise_conv();
-    relu6();
-    point_wise_conv();
+    in_shape = 31, in_c = 32;
+    k_shape = 1, out_c = 192;
+    stride = 1, pad = 0;
+    out_lens = 192 * 31 * 31;
+    is_relu = true;
+    st = clock();
+    point_wise_conv(in_tensor, &out_tensor, w13, b13, in_shape, in_c, out_c, is_relu, is_log, &handle);
+    et = clock();
+    printf("conv13: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/350.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
 
-    add_layer();
+
+    in_shape = 31, in_c = 192;
+    k_shape = 3, out_c = 192;
+    stride = 1, pad = 1;
+    out_lens = 192 * 31 * 31;
+    st = clock();
+    depth_wise_conv(in_tensor, &out_tensor, w14, b14, in_shape, in_c, k_shape, out_c, stride, pad, is_log);
+    et = clock();
+    printf("conv14: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/353.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+
+    in_shape = 31, in_c = 192;
+    k_shape = 1, out_c = 32;
+    stride = 1, pad = 0;
+    out_lens = 32 * 31 * 31;
+    is_relu = false;
+    st = clock();
+    point_wise_conv(in_tensor, &out_tensor, w15, b15, in_shape, in_c, out_c, is_relu, is_log, &handle);
+    et = clock();
+    printf("conv15: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/516.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+
+    in_shape = 31;
+    in_c = 32;
+    st = clock();
+    add_layer(in_tensor, backup_tensor, &out_tensor, in_c, in_shape);
+    et = clock();
+    printf("add2: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/356.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+
+    store_back_up(in_tensor, &backup_tensor, out_lens);
 
     // Block7:
-    point_wise_conv();
-    relu6();
-    depth_wise_conv();
-    relu6();
-    point_wise_conv();
+    in_shape = 31, in_c = 32;
+    k_shape = 1, out_c = 192;
+    stride = 1, pad = 0;
+    out_lens = 192 * 31 * 31;
+    is_relu = true;
+    st = clock();
+    point_wise_conv(in_tensor, &out_tensor, w16, b16, in_shape, in_c, out_c, is_relu, is_log, &handle);
+    et = clock();
+    printf("conv16: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/350.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
 
-    add_layer();
 
+    in_shape = 31, in_c = 192;
+    k_shape = 3, out_c = 192;
+    stride = 1, pad = 1;
+    out_lens = 192 * 31 * 31;
+    st = clock();
+    depth_wise_conv(in_tensor, &out_tensor, w17, b17, in_shape, in_c, k_shape, out_c, stride, pad, is_log);
+    et = clock();
+    printf("conv17: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/353.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+
+    in_shape = 31, in_c = 192;
+    k_shape = 1, out_c = 32;
+    stride = 1, pad = 0;
+    out_lens = 32 * 31 * 31;
+    is_relu = false;
+    st = clock();
+    point_wise_conv(in_tensor, &out_tensor, w18, b18, in_shape, in_c, out_c, is_relu, is_log, &handle);
+    et = clock();
+    printf("conv18: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/516.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+
+    in_shape = 31;
+    in_c = 32;
+    st = clock();
+    add_layer(in_tensor, backup_tensor, &out_tensor, in_c, in_shape);
+    et = clock();
+    printf("add3: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
+    // check_layer_data(out_tensor, out_lens, out_lens - 1, "./tmpfiles/365.txt");
+    // exit(0);
+    in_tensor = out_tensor;
+    out_tensor = NULL;
+
+/*
     // Block8:
     point_wise_conv();
     relu6();

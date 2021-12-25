@@ -1,5 +1,12 @@
 #include "init_model.cuh"
 
+const int float_size = sizeof (float);
+time_t st, et;
+cublasStatus_t status;
+cublasHandle_t handle;
+
+FILE *w_in = NULL, *b_in = NULL;
+
 const int w1_len = 32 * 3 * 3 * 3, b1_len = 32;
 const int w2_len = 32 * 1 * 3 * 3, b2_len = 32;
 const int w3_len = 16 * 32 * 1 * 1, b3_len = 16;
@@ -54,10 +61,6 @@ const int w51_len = 320 * 960 * 1 * 1, b51_len = 320;
 const int w52_len = 1280 * 320 * 1 * 1, b52_len = 1280;
 const int w53_len = 1000 * 1280 * 1 * 1, b53_len = 1000;
 
-const int float_size = sizeof (float);
-
-FILE *w_in = NULL, *b_in = NULL;
-
 float *w1, *b1;
 float *w2, *b2;
 float *w3, *b3;
@@ -111,6 +114,8 @@ float *w50, *b50;
 float *w51, *b51;
 float *w52, *b52;
 float *w53, *b53;
+
+
 
 
 void alloc_mem() {
@@ -322,9 +327,11 @@ void init_model()
     alloc_mem();
     read_params();
 
-    test_read_data();
+    // test_read_data();
     
     move_params();
+    status = cublasCreate(&handle);
+    assert(status == CUBLAS_STATUS_SUCCESS);
 }
 
 void test_read_data() {
