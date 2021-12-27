@@ -1,6 +1,6 @@
 #include "init_model.cuh"
 
-const int float_size = sizeof (float);
+const int float_size = sizeof(float);
 time_t st, et;
 cublasStatus_t status;
 cublasHandle_t handle;
@@ -116,7 +116,8 @@ float *w52, *b52;
 float *w53, *b53;
 
 
-void alloc_mem() {
+void AllocateMemory()
+{
     w1 = (float*) malloc(w1_len * float_size); b1 = (float*) malloc(b1_len * float_size);
     w2 = (float*) malloc(w2_len * float_size); b2 = (float*) malloc(b2_len * float_size);
     w3 = (float*) malloc(w3_len * float_size); b3 = (float*) malloc(b3_len * float_size);
@@ -172,7 +173,8 @@ void alloc_mem() {
     w53 = (float*) malloc(w53_len * float_size); b53 = (float*) malloc(b53_len * float_size);
 }
 
-void read_params() {
+void ReadParams()
+{
     fread(w1, w1_len * float_size, 1, w_in); fread(b1, b1_len * float_size, 1, b_in);
     fread(w2, w2_len * float_size, 1, w_in); fread(b2, b2_len * float_size, 1, b_in);
     fread(w3, w3_len * float_size, 1, w_in); fread(b3, b3_len * float_size, 1, b_in);
@@ -228,7 +230,8 @@ void read_params() {
     fread(w53, w53_len * float_size, 1, w_in); fread(b53, b53_len * float_size, 1, b_in);
 }
 
-void move_item(float** w_p, int w_len, float** b_p, int b_len) {
+void MoveItem(float** w_p, int w_len, float** b_p, int b_len)
+{
     float *w_gpu = NULL, *b_gpu = NULL;
 
     cudaError_t e1 = cudaSuccess, e2 = cudaSuccess;
@@ -246,7 +249,8 @@ void move_item(float** w_p, int w_len, float** b_p, int b_len) {
     *b_p = b_gpu;
 }
 
-void move_imgs(float* input, float** imgs_p, int len) {
+void MoveImgs(float* input, float** imgs_p, int len)
+{
     float *imgs_gpu = NULL;
 
     cudaError_t err = cudaSuccess;
@@ -259,80 +263,82 @@ void move_imgs(float* input, float** imgs_p, int len) {
     *imgs_p = imgs_gpu;
 }
 
-void move_params() {
-    move_item(&w1, w1_len, &b1, b1_len);
-    move_item(&w2, w2_len, &b2, b2_len);
-    move_item(&w3, w3_len, &b3, b3_len);
-    move_item(&w4, w4_len, &b4, b4_len);
-    move_item(&w5, w5_len, &b5, b5_len);
-    move_item(&w6, w6_len, &b6, b6_len);
-    move_item(&w7, w7_len, &b7, b7_len);
-    move_item(&w8, w8_len, &b8, b8_len);
-    move_item(&w9, w9_len, &b9, b9_len);
-    move_item(&w10, w10_len, &b10, b10_len);
-    move_item(&w11, w11_len, &b11, b11_len);
-    move_item(&w12, w12_len, &b12, b12_len);
-    move_item(&w13, w13_len, &b13, b13_len);
-    move_item(&w14, w14_len, &b14, b14_len);
-    move_item(&w15, w15_len, &b15, b15_len);
-    move_item(&w16, w16_len, &b16, b16_len);
-    move_item(&w17, w17_len, &b17, b17_len);
-    move_item(&w18, w18_len, &b18, b18_len);
-    move_item(&w19, w19_len, &b19, b19_len);
-    move_item(&w20, w20_len, &b20, b20_len);
-    move_item(&w21, w21_len, &b21, b21_len);
-    move_item(&w22, w22_len, &b22, b22_len);
-    move_item(&w23, w23_len, &b23, b23_len);
-    move_item(&w24, w24_len, &b24, b24_len);
-    move_item(&w25, w25_len, &b25, b25_len);
-    move_item(&w26, w26_len, &b26, b26_len);
-    move_item(&w27, w27_len, &b27, b27_len);
-    move_item(&w28, w28_len, &b28, b28_len);
-    move_item(&w29, w29_len, &b29, b29_len);
-    move_item(&w30, w30_len, &b30, b30_len);
-    move_item(&w31, w31_len, &b31, b31_len);
-    move_item(&w32, w32_len, &b32, b32_len);
-    move_item(&w33, w33_len, &b33, b33_len);
-    move_item(&w34, w34_len, &b34, b34_len);
-    move_item(&w35, w35_len, &b35, b35_len);
-    move_item(&w36, w36_len, &b36, b36_len);
-    move_item(&w37, w37_len, &b37, b37_len);
-    move_item(&w38, w38_len, &b38, b38_len);
-    move_item(&w39, w39_len, &b39, b39_len);
-    move_item(&w40, w40_len, &b40, b40_len);
-    move_item(&w41, w41_len, &b41, b41_len);
-    move_item(&w42, w42_len, &b42, b42_len);
-    move_item(&w43, w43_len, &b43, b43_len);
-    move_item(&w44, w44_len, &b44, b44_len);
-    move_item(&w45, w45_len, &b45, b45_len);
-    move_item(&w46, w46_len, &b46, b46_len);
-    move_item(&w47, w47_len, &b47, b47_len);
-    move_item(&w48, w48_len, &b48, b48_len);
-    move_item(&w49, w49_len, &b49, b49_len);
-    move_item(&w50, w50_len, &b50, b50_len);
-    move_item(&w51, w51_len, &b51, b51_len);
-    move_item(&w52, w52_len, &b52, b52_len);
-    move_item(&w53, w53_len, &b53, b53_len);
+void MoveParams()
+{
+    MoveItem(&w1, w1_len, &b1, b1_len);
+    MoveItem(&w2, w2_len, &b2, b2_len);
+    MoveItem(&w3, w3_len, &b3, b3_len);
+    MoveItem(&w4, w4_len, &b4, b4_len);
+    MoveItem(&w5, w5_len, &b5, b5_len);
+    MoveItem(&w6, w6_len, &b6, b6_len);
+    MoveItem(&w7, w7_len, &b7, b7_len);
+    MoveItem(&w8, w8_len, &b8, b8_len);
+    MoveItem(&w9, w9_len, &b9, b9_len);
+    MoveItem(&w10, w10_len, &b10, b10_len);
+    MoveItem(&w11, w11_len, &b11, b11_len);
+    MoveItem(&w12, w12_len, &b12, b12_len);
+    MoveItem(&w13, w13_len, &b13, b13_len);
+    MoveItem(&w14, w14_len, &b14, b14_len);
+    MoveItem(&w15, w15_len, &b15, b15_len);
+    MoveItem(&w16, w16_len, &b16, b16_len);
+    MoveItem(&w17, w17_len, &b17, b17_len);
+    MoveItem(&w18, w18_len, &b18, b18_len);
+    MoveItem(&w19, w19_len, &b19, b19_len);
+    MoveItem(&w20, w20_len, &b20, b20_len);
+    MoveItem(&w21, w21_len, &b21, b21_len);
+    MoveItem(&w22, w22_len, &b22, b22_len);
+    MoveItem(&w23, w23_len, &b23, b23_len);
+    MoveItem(&w24, w24_len, &b24, b24_len);
+    MoveItem(&w25, w25_len, &b25, b25_len);
+    MoveItem(&w26, w26_len, &b26, b26_len);
+    MoveItem(&w27, w27_len, &b27, b27_len);
+    MoveItem(&w28, w28_len, &b28, b28_len);
+    MoveItem(&w29, w29_len, &b29, b29_len);
+    MoveItem(&w30, w30_len, &b30, b30_len);
+    MoveItem(&w31, w31_len, &b31, b31_len);
+    MoveItem(&w32, w32_len, &b32, b32_len);
+    MoveItem(&w33, w33_len, &b33, b33_len);
+    MoveItem(&w34, w34_len, &b34, b34_len);
+    MoveItem(&w35, w35_len, &b35, b35_len);
+    MoveItem(&w36, w36_len, &b36, b36_len);
+    MoveItem(&w37, w37_len, &b37, b37_len);
+    MoveItem(&w38, w38_len, &b38, b38_len);
+    MoveItem(&w39, w39_len, &b39, b39_len);
+    MoveItem(&w40, w40_len, &b40, b40_len);
+    MoveItem(&w41, w41_len, &b41, b41_len);
+    MoveItem(&w42, w42_len, &b42, b42_len);
+    MoveItem(&w43, w43_len, &b43, b43_len);
+    MoveItem(&w44, w44_len, &b44, b44_len);
+    MoveItem(&w45, w45_len, &b45, b45_len);
+    MoveItem(&w46, w46_len, &b46, b46_len);
+    MoveItem(&w47, w47_len, &b47, b47_len);
+    MoveItem(&w48, w48_len, &b48, b48_len);
+    MoveItem(&w49, w49_len, &b49, b49_len);
+    MoveItem(&w50, w50_len, &b50, b50_len);
+    MoveItem(&w51, w51_len, &b51, b51_len);
+    MoveItem(&w52, w52_len, &b52, b52_len);
+    MoveItem(&w53, w53_len, &b53, b53_len);
 }
 
-void init_model() 
+void InitModel() 
 {
     char weight_path[] = "./parameters/weight_data.bin";
     char bias_path[] = "./parameters/bias_data.bin";
     w_in = fopen(weight_path, "rb");
     b_in = fopen(bias_path, "rb");
 
-    alloc_mem();
-    read_params();
+    AllocateMemory();
+    ReadParams();
 
-    // test_read_data();
+    // TestReadData();
     
-    move_params();
+    MoveParams();
     status = cublasCreate(&handle);
     assert(status == CUBLAS_STATUS_SUCCESS);
 }
 
-void test_read_data() {
+void TestReadData()
+{
     printf("%d\n", float_size);
     printf("%f %f\n", w1[w1_len - 1], b1[b1_len - 1]);
     printf("%f %f\n", w2[w2_len - 1], b2[b2_len - 1]);
@@ -389,8 +395,8 @@ void test_read_data() {
     printf("%f %f\n", w53[w53_len - 1], b53[b53_len - 1]);
 }
 
-
-void free_memory() {
+void FreeMemory() 
+{
     cudaError_t err;
     cublasStatus_t status = cublasDestroy(handle); assert(status == CUBLAS_STATUS_SUCCESS);
     err = cudaFree(w1); assert(err == cudaSuccess); err = cudaFree(b1); assert(err == cudaSuccess);
@@ -448,10 +454,8 @@ void free_memory() {
     err = cudaFree(w53); assert(err == cudaSuccess); err = cudaFree(b53); assert(err == cudaSuccess);
 }
 
-
-void test_output_data(float* nums, int lens, int idx) {
-    // print_output<<<1, 1>>>(nums, lens, idx);
-    // cudaDeviceSynchronize();
+void TestOutputData(float* nums, int lens, int idx)
+{
     float *nums_cpu = NULL;
     nums_cpu = (float*) malloc(lens * float_size);
     cudaMemcpy(nums_cpu, nums, lens * float_size, cudaMemcpyDeviceToHost);

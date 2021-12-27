@@ -8,3 +8,4 @@ temp*
 **/mobilenetInput.txt
 **/mobilenetOutput.txt
 /out
+*.backup

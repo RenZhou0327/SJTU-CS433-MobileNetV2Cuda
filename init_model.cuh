@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cuda_runtime.h>
-#include<cublas_v2.h>
+#include <cublas_v2.h>
 #include <time.h>
 #include <assert.h>
 
@@ -124,27 +124,27 @@ extern float *w53, *b53;
 
 
 // 读取权重
-void init_model();
+void InitModel();
 
 // 分配内存空间
-void alloc_mem();
+void AllocateMemory();
 
 // 读取weight和bias
-void read_params();
+void ReadParams();
 
 // 移动到gpu上
-void move_params();
+void MoveParams();
 
 // 移动图片到gpu上
-void move_imgs(float* input, float** imgs, int len);
+void MoveImgs(float* input, float** imgs, int len);
 
 // 测试模型读入权重是否正确
-void test_read_data();
+void TestReadData();
 
 // 测试模型输出值
-void test_output_data(float* nums, int lens, int idx);
+void TestOutputData(float* nums, int lens, int idx);
 
 // 释放内存
-void free_memory();
+void FreeMemory();
 
 #endif
