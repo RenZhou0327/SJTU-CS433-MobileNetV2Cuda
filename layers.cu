@@ -78,8 +78,8 @@ void mat_multiply_cublas(float *A, float *B, float* C, int m, int k, int n, cons
     // op(A) = A^T if transa == CUBLAS_OP_T, row major
     // op(A) = A^H if transa == CUBLAS_OP_C
     // Two common usages:
-    // 1. C=AB: cublasSgemm(handle,CUBLAS_OP_N,CUBLAS_OP_N,n,m,k,&alpha,B,n,A,k,&beta,C,n)
-    // 2. CT=BT*AT: cublasSgemm(handle,CUBLAS_OP_T,CUBLAS_OP_T,m,n,k,&alpha,A,m,B,k,&beta,C,m)
+    // 1. CT = BT * AT: cublasSgemm(handle,CUBLAS_OP_T,CUBLAS_OP_T,m,n,k,&alpha,A,m,B,k,&beta,C,m)
+    // 2. C = AB: cublasSgemm(handle,CUBLAS_OP_N,CUBLAS_OP_N,n,m,k,&alpha,B,n,A,k,&beta,C,n)
     in_s_t = clock();
     cublasSgemm(*handle_p, CUBLAS_OP_N, CUBLAS_OP_N, n, m, k, &al, B, n, A, k, &bt, C, n);
     in_e_t = clock();
@@ -103,7 +103,7 @@ void conv2d(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_s
     // printf("%d %d %d %d %d\n", threadNum, bIndx, bIndy, tIndx, tIndy);
     // exit(0);
     dim3 gDim(bIndx, bIndy);
-    // !!! 特别注意, tIndx * tIndy得小于1024, 否则出错无结果!!!
+    // !!! 特别注意, tIndx * tIndy得小于1024, 否则无执行结果!!!
     dim3 bDim(tIndx, tIndy);
     s_t = clock();
     img2col<<<gDim, bDim>>>(in_tensor, in_cols, in_shape, out_shape, k_shape, in_c, stride, pad);
