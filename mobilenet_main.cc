@@ -57,8 +57,8 @@ int main()
     
     initModel(); // 读取网络权重
     
-    readInput("./mobilenetInput.txt");   // 读取输入
-    readOutput("./mobilenetOutput.txt"); // 读取标准输出
+    readInput((char*)"./mobilenetInput.txt");   // 读取输入
+    readOutput((char*)"./mobilenetOutput.txt"); // 读取标准输出
 
 
     float sumTime = 0;
@@ -87,7 +87,7 @@ int main()
     }
     printf("Average Time is: %f\n", (sumTime / TESTNUM / ITERNUM));
 
-    free_memory();
+    free_memory();  // 释放动态内存
 }
 
 void initModel() {
@@ -97,10 +97,11 @@ void initModel() {
 void inference(float *input, float *output)
 {
 
+
     // 注意这里imgs是CHW格式
     float *in_tensor = NULL, *out_tensor = NULL, *backup_tensor = NULL;
     st = clock();
-    move_imgs(input, &in_tensor, INPUTSHAPE);
+    move_imgs(input, &in_tensor, INPUTSHAPE);   // img移动到gpu上
     et = clock();
     // printf("move_img: %lf\n", (double)(et - st) / CLOCKS_PER_SEC);
 

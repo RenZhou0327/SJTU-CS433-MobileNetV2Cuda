@@ -392,6 +392,7 @@ void test_read_data() {
 
 void free_memory() {
     cudaError_t err;
+    cublasStatus_t status = cublasDestroy(handle); assert(status == CUBLAS_STATUS_SUCCESS);
     err = cudaFree(w1); assert(err == cudaSuccess); err = cudaFree(b1); assert(err == cudaSuccess);
     err = cudaFree(w2); assert(err == cudaSuccess); err = cudaFree(b2); assert(err == cudaSuccess);
     err = cudaFree(w3); assert(err == cudaSuccess); err = cudaFree(b3); assert(err == cudaSuccess);
