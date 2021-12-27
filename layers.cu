@@ -201,8 +201,7 @@ void DepthwiseConv(float* in_tensor, float** out_tensor_p, float* w, float* b, i
 
     err = cudaMemcpyToSymbol(const_bias, b, out_c * sizeof(float), 0, cudaMemcpyDeviceToDevice);
     assert(err == cudaSuccess);
-    DepthwiseKernel<<<gridDim, dDim>>>(in_tensor, out_tensor, w, b, in_shape, out_shape, k_shape, out_c, stride, pad);
-    cudaDeviceSynchronize();
+    DepthwiseKernel<<<gridDim, blockDim>>>(in_tensor, out_tensor, w, b, in_shape, out_shape, k_shape, out_c, stride, pad);
     err = cudaFree(in_tensor);
     assert(err == cudaSuccess);
     // cudaFree(w);
