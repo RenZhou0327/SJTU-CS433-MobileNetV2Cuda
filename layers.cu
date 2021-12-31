@@ -338,16 +338,11 @@ __global__ void GlobalAvgPoolKernel(float* in_tensor, float* out_tensor, int cha
     int out_idx = thread_i * gridDim.x * blockDim.x + thread_j;
 
     float sum = 0.0f;
-    for (int i = 0; i < in_shape; ++i)
-    {
-        for (int j = 0; j < in_shape; ++j)
-        {
-            // TODO: 有什么可以优化的吗，比如in_tensor数组取值？
-            sum += in_tensor[out_idx * in_shape * in_shape + i * in_shape + j];
-        }
+    int sz = in_shape * in_shape;
+    for (int i = 0; i < sz; ++i) {
+        sum += in_tensor[out_idx * sz + i];
     }
-    int divisor = in_shape * in_shape; // num of total grids in one channel of in_tensor
-    out_tensor[out_idx] = sum / divisor;
+    out_tensor[out_idx] = sum / sz;
 }
 
 void GlobalAvgPool(float* in_tensor, float** out_tensor_p, int channels, int in_shape)
