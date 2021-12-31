@@ -83,9 +83,10 @@ void MatMultiplyCublas(float *A, float *B, float* C, int m, int k, int n, const 
             1. CT = BT * AT: cublasSgemm(handle,CUBLAS_OP_T,CUBLAS_OP_T,m,n,k,&alpha,A,m,B,k,&beta,C,m)
             2. C = AB: cublasSgemm(handle,CUBLAS_OP_N,CUBLAS_OP_N,n,m,k,&alpha,B,n,A,k,&beta,C,n)
     */
-    in_s_t = clock();
+    // in_s_t = clock();
     cublasSgemm(*handle_p, CUBLAS_OP_N, CUBLAS_OP_N, n, m, k, &al, B, n, A, k, &bt, C, n);
-    in_e_t = clock();
+    // in_e_t = clock();
+    // printf("time_inner_gemm: %lf\n", (double)(e_t - s_t) / CLOCKS_PER_SEC);
 }
 
 
@@ -106,9 +107,10 @@ void Conv2d(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_s
     // !!! Note that on Tesla V100, the maximum number of threads per block is 1024.
     // We must have tIndx * tIndy < 1024, otherwise we will get no result!!
     dim3 blockDim(tIndx, tIndy);
-    s_t = clock();
+    // s_t = clock();
     Img2Col<<<gridDim, blockDim>>>(in_tensor, in_cols, in_shape, out_shape, k_shape, in_c, stride, pad);
-    e_t = clock();
+    // e_t = clock();
+    // printf("time_img2col: %lf\n", (double)(e_t - s_t) / CLOCKS_PER_SEC);
     err = cudaFree(in_tensor);
     assert(err == cudaSuccess);
 
@@ -117,10 +119,10 @@ void Conv2d(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_s
     int mat_m = out_c, mat_k = in_c * k_shape * k_shape, mat_n = out_shape * out_shape;
     err = cudaMalloc((void**)&out_tensor, out_lens * sizeof(float));
     assert(err == cudaSuccess);
-    s_t = clock();
+    // s_t = clock();
     MatMultiplyCublas(w, in_cols, out_tensor, mat_m, mat_k, mat_n, 1.0f, 0.0f, handle_p);
-    e_t = clock();
-    // printf("gemm: %lf\n", (double)(e_t - s_t) / CLOCKS_PER_SEC);
+    // e_t = clock();
+    // printf("time_gemm: %lf\n", (double)(e_t - s_t) / CLOCKS_PER_SEC);
     // err = cudaFree(w);
     // assert(err == cudaSuccess);
     err = cudaFree(in_cols);
@@ -131,9 +133,10 @@ void Conv2d(float* in_tensor, float** out_tensor_p, float* w, float* b, int in_s
     dim3 blockDim_bias(out_c, 1);
     err = cudaMemcpyToSymbol(const_bias, b, out_c * sizeof(float), 0, cudaMemcpyDeviceToDevice);
     assert(err == cudaSuccess);
-    s_t = clock();
+    // s_t = clock();
     AddBiasRelu6<<<gridDim_bias, blockDim_bias>>>(out_tensor, out_c, out_shape);
-    e_t = clock();
+    // e_t = clock();
+    // printf("time_bias: %lf\n", (double)(e_t - s_t) / CLOCKS_PER_SEC);
     
     *out_tensor_p = out_tensor;
 };
