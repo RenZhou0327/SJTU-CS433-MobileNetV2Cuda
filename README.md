@@ -7,7 +7,7 @@
   An optimized MobileNet-V2 implementation by Cuda C
   
 ## My Work
-  Set up the Model and Binary Parameters, Write all Convolution(Conv2d, Depth-wise Conv and Point-wise Conv) Layer and Matrix Gemm.
+  Set up MobileNet-V2 Model Structure and Test Binary Parameters in Each Layer, Write all Convolution(Conv2d, Depth-wise Conv and Point-wise Conv) Layers and Matrix Gemm Methods.
 
 ## Structure
 ```
