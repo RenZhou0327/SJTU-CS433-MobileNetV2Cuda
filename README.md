@@ -4,7 +4,7 @@
   Xiaoyao Liang
   
 ## Basic Info
-  An optimized MobileNet-V2 implementation by Cuda C
+  An optimized **MobileNet-V2** Model implemented by Cuda C
   
 ## My Work
   Set up MobileNet-V2 Model Structure and Test Binary Parameters in Each Layer, Write all Convolution(Conv2d, Depth-wise Conv and Point-wise Conv) Layers and Matrix Gemm Methods.
@@ -36,8 +36,14 @@
 ```
 
 ## Running
-Please put **mobilenetInput.txt**, **mobilenetOutput.txt** in /Code/ direction and put  **weight_data.bin** and **bias_data.bin** in /Code/parameters/ direction.
-
+Please put **mobilenetInput.txt**, **mobilenetOutput.txt** in /Code/ folder and put  **weight_data.bin** and **bias_data.bin** in /Code/parameters/ folder.
+	
+- **mobilenetInput.txt** contains a batch of images data, each line represents an images (c \* h \* w).
+	
+- **mobilenetOutput.txt** contains inference result from model/mobilenet_v2.onnx model, which can be seen as ground truth. The dimension of each line is 1000.
+	
+- **weight_data.bin** is W of **W**X + b for each layer; **bias_data.bin** is b of WX + **b** for each layer. These two binary files can be gotten from preprocess/ReadONNX.py, from where you can get two text files and then convert them to binary files.
+ 
 ​	Then execute in terminal:
 
 ```
